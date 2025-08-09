@@ -1,0 +1,116 @@
+* {
+  border: 0;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --hue: 223;
+  --bg: hsl(var(--hue), 90%, 50%);
+  --front: hsl(var(--hue), 90%, 95%);
+  --back: hsl(var(--hue), 90%, 5%);
+  --trans-dur: 0.3s;
+  font-size: clamp(1rem, 0.9rem + 0.5vw, 1.5rem);
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--back);
+  display: grid;
+  place-items: center;
+  font: 1em/1.5 -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, sans-serif;
+  height: 100vh;
+}
+
+.tot {
+  position: relative;
+  width: 20em;
+  height: 20em;
+}
+.tot__layer, .tot__tread {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+}
+.tot__layer {
+  color: transparent;
+  direction: ltr;
+  font-size: 3em;
+  font-weight: 900;
+  line-height: 1;
+  transform: translate(-50%, -50%) rotateX(45deg) rotateZ(45deg);
+  transform-style: preserve-3d;
+}
+.tot__tread {
+  animation-name: letter-tread-back;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  backface-visibility: hidden;
+  color: var(--back);
+  overflow: hidden;
+  height: 100%;
+  transform: translate(-50%, -50%);
+  transition: color var(--trans-dur);
+}
+.tot__tread-window:before {
+  content: attr(data-text);
+  display: block;
+  white-space: nowrap;
+  transform: rotateY(180deg);
+}
+.tot__layer:last-child .tot__tread {
+  animation-name: letter-tread-front;
+  color: var(--front);
+}
+.tot__layer:last-child .tot__tread-window:before {
+  transform: rotateY(0);
+}
+
+/* Animations */
+@keyframes letter-tread-back {
+  from {
+    transform: translate(-50%, -50%) translateX(0) rotateY(0) translateZ(-2rem);
+  }
+  17.9507549969% {
+    transform: translate(-50%, -50%) translateX(8rem) rotateY(0) translateZ(-2rem);
+  }
+  32.0492450031% {
+    transform: translate(-50%, -50%) translateX(8rem) rotateY(-180deg) translateZ(-2rem);
+  }
+  50% {
+    transform: translate(-50%, -50%) translateX(0) rotateY(-180deg) translateZ(-2rem);
+  }
+  67.9507549969% {
+    transform: translate(-50%, -50%) translateX(-8rem) rotateY(-180deg) translateZ(-2rem);
+  }
+  82.0492450031% {
+    transform: translate(-50%, -50%) translateX(-8rem) rotateY(-360deg) translateZ(-2rem);
+  }
+  to {
+    transform: translate(-50%, -50%) translateX(0) rotateY(-360deg) translateZ(-2rem);
+  }
+}
+@keyframes letter-tread-front {
+  from {
+    transform: translate(-50%, -50%) translateX(0) rotateY(0) translateZ(2rem);
+  }
+  17.9507549969% {
+    transform: translate(-50%, -50%) translateX(-8rem) rotateY(0) translateZ(2rem);
+  }
+  32.0492450031% {
+    transform: translate(-50%, -50%) translateX(-8rem) rotateY(-180deg) translateZ(2rem);
+  }
+  50% {
+    transform: translate(-50%, -50%) translateX(0) rotateY(-180deg) translateZ(2rem);
+  }
+  67.9507549969% {
+    transform: translate(-50%, -50%) translateX(8rem) rotateY(-180deg) translateZ(2rem);
+  }
+  82.0492450031% {
+    transform: translate(-50%, -50%) translateX(8rem) rotateY(-360deg) translateZ(2rem);
+  }
+  to {
+    transform: translate(-50%, -50%) translateX(0) rotateY(-360deg) translateZ(2rem);
+  }
+}
