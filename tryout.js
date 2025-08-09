@@ -58,7 +58,8 @@
   const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const section = document.querySelector('.features-section');
   if (!section || prefersReduced) return;
-  const isMobile = window.matchMedia && window.matchMedia('(max-width: 640px)').matches;
+  const isMobileView = window.matchMedia && window.matchMedia('(max-width: 720px)').matches;
+  if (isMobileView) return;
 
   if (!window.gsap) return;
   gsap.registerPlugin(ScrollTrigger);
@@ -76,7 +77,7 @@
         trigger: section,
         start: 'top 80%',
         end: 'top 20%',
-        toggleActions: isMobile ? 'play none none none' : 'play none none reverse'
+        toggleActions: 'play none none reverse'
       }
     });
 
@@ -87,55 +88,39 @@
 
   // Cards entrance animation
   if (featureCards.length) {
-    if (!isMobile) {
-      gsap.set(featureCards, { transformPerspective: 800, transformOrigin: '50% 60%' });
-      gsap.from(featureCards, {
-        opacity: 0,
-        y: 60,
-        rotateX: -12,
-        rotateY: 6,
-        scale: 0.96,
-        duration: 0.7,
-        ease: 'expo.out',
-        stagger: 0.1,
-        scrollTrigger: {
-          trigger: grid,
-          start: 'top 75%',
-          toggleActions: 'play none none reverse'
-        }
-      });
-    } else {
-      gsap.from(featureCards, {
-        opacity: 0,
-        y: 24,
-        duration: 0.45,
-        ease: 'power2.out',
-        stagger: 0.08,
-        scrollTrigger: {
-          trigger: grid,
-          start: 'top 80%',
-          toggleActions: 'play none none none'
-        }
-      });
-    }
+    gsap.set(featureCards, { transformPerspective: 800, transformOrigin: '50% 60%' });
+    gsap.from(featureCards, {
+      opacity: 0,
+      y: 80,
+      rotateX: -18,
+      rotateY: 8,
+      scale: 0.94,
+      filter: 'blur(4px)',
+      duration: 0.9,
+      ease: 'expo.out',
+      stagger: 0.12,
+      scrollTrigger: {
+        trigger: grid,
+        start: 'top 75%',
+        toggleActions: 'play none none reverse'
+      }
+    });
 
-    // Parallax on icons inside cards during scroll (desktop only)
-    if (!isMobile) {
-      featureCards.forEach((card) => {
-        const icon = card.querySelector('.feature-icon');
-        if (!icon) return;
-        gsap.fromTo(icon, { y: 0 }, {
-          y: -10,
-          ease: 'none',
-          scrollTrigger: {
-            trigger: card,
-            start: 'top bottom',
-            end: 'bottom top',
-            scrub: true
-          }
-        });
+    // Parallax on icons inside cards during scroll
+    featureCards.forEach((card) => {
+      const icon = card.querySelector('.feature-icon');
+      if (!icon) return;
+      gsap.fromTo(icon, { y: 0 }, {
+        y: -10,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: card,
+          start: 'top bottom',
+          end: 'bottom top',
+          scrub: true
+        }
       });
-    }
+    });
 
     // Reveal inner content per card
     featureCards.forEach((card) => {
@@ -148,7 +133,7 @@
         scrollTrigger: {
           trigger: card,
           start: 'top 78%',
-          toggleActions: isMobile ? 'play none none none' : 'play none none reverse'
+          toggleActions: 'play none none reverse'
         }
       });
 
@@ -158,10 +143,8 @@
       if (cta) tl.from(cta, { y: 10, opacity: 0, duration: 0.3, ease: 'power2.out' }, '-=0.05');
     });
 
-    // Hover tilt interaction (pointer devices only)
-    const supportsHover = window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+    // Hover tilt interaction
     featureCards.forEach((card) => {
-      if (!supportsHover) return;
       card.addEventListener('mousemove', (e) => {
         const rect = card.getBoundingClientRect();
         const relX = (e.clientX - rect.left) / rect.width - 0.5;
@@ -525,19 +508,28 @@
 
   const mapBlock = document.querySelector('.features-map .map-img');
   const mapWrap = document.querySelector('.features-map');
-  if (mapBlock && mapWrap && !isMobile) {
-    gsap.set(mapBlock, { scale: 0.95, opacity: 0.95 });
-    gsap.to(mapBlock, {
-      scale: 1,
-      opacity: 1,
-      ease: 'none',
-      scrollTrigger: {
-        trigger: mapWrap,
-        start: 'top bottom',
-        end: 'center center',
-        scrub: true
-      }
-    });
+  if (mapBlock && mapWrap) {
+    const isMobileView = window.matchMedia && window.matchMedia('(max-width: 720px)').matches;
+    if (isMobileView || !window.gsap) {
+      // On mobile or when GSAP is unavailable, show static image without scroll effects
+      mapBlock.style.transform = 'none';
+      mapBlock.style.filter = 'none';
+      mapBlock.style.opacity = '1';
+    } else {
+      gsap.set(mapBlock, { scale: 0.9, filter: 'blur(2px)', opacity: 0.9 });
+      gsap.to(mapBlock, {
+        scale: 1,
+        filter: 'blur(0px)',
+        opacity: 1,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: mapWrap,
+          start: 'top bottom',
+          end: 'center center',
+          scrub: true
+        }
+      });
+    }
   }
 })(); 
 
@@ -577,12 +569,55 @@
   });
 })();
 
+// Mobile simple scroll reveal (used on mobile instead of GSAP ScrollTrigger)
+(function () {
+  if (typeof window === 'undefined') return;
+  const isMobileView = window.matchMedia && window.matchMedia('(max-width: 720px)').matches;
+  const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!isMobileView || prefersReduced) return;
+
+  const selectors = [
+    '#mission .pill, #mission .section-title, #mission .mission-cta',
+    '#mission .mission-mobile-image img',
+    '#services .fs-left .fs-tab',
+    '#services .fs-right .fs-bubble',
+    '.earn-section .earn-content .pill, .earn-section .earn-content .section-title',
+    '.rfu .rfu-title',
+    '.rfu .rfu-card',
+    '.rfu .rfu-benefits .benefit',
+    '.rfu .rfu-cta',
+    '#testimonials .testimonials-header',
+    '.testimonials-gallery',
+    '.end-section .end-content',
+    '.site-footer .footer-top, .site-footer .footer-bottom'
+  ];
+
+  const elements = selectors.flatMap(sel => Array.from(document.querySelectorAll(sel)));
+  elements.forEach(el => el.classList.add('reveal'));
+
+  if (elements.length) {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          requestAnimationFrame(() => {
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target);
+          });
+        }
+      });
+    }, { threshold: 0.01, rootMargin: '0px 0px 15% 0px' });
+
+    elements.forEach(el => observer.observe(el));
+  }
+})();
+
 // Waitlist animations (GSAP)
 (function () {
-  if (typeof window === 'undefined' || !window.gsap) return;
+  if (typeof window === 'undefined') return;
   const section = document.querySelector('.waitlist-section');
   if (!section) return;
-  const isMobile = window.matchMedia && window.matchMedia('(max-width: 640px)').matches;
+  const isMobileView = window.matchMedia && window.matchMedia('(max-width: 720px)').matches;
+  if (isMobileView || !window.gsap) return;
 
   const cards = Array.from(section.querySelectorAll('.wl-card'));
   const title = section.querySelector('.waitlist-title, .inquiry-title');
@@ -597,7 +632,6 @@
       scrollTrigger: {
         trigger: section,
         start: 'top 80%',
-        toggleActions: isMobile ? 'play none none none' : 'play none none reverse'
       }
     });
   }
@@ -612,28 +646,25 @@
       stagger: 0.12,
       scrollTrigger: {
         trigger: section,
-        start: 'top 75%',
-        toggleActions: isMobile ? 'play none none none' : 'play none none reverse'
+        start: 'top 75%'
       }
     });
 
-    // subtle parallax on icons (desktop only)
-    if (!isMobile) {
-      cards.forEach((card) => {
-        const icon = card.querySelector('.wl-icon');
-        if (!icon) return;
-        gsap.fromTo(icon, { y: 0 }, {
-          y: -8,
-          ease: 'none',
-          scrollTrigger: {
-            trigger: card,
-            start: 'top bottom',
-            end: 'bottom top',
-            scrub: true
-          }
-        });
+    // subtle parallax on icons
+    cards.forEach((card) => {
+      const icon = card.querySelector('.wl-icon');
+      if (!icon) return;
+      gsap.fromTo(icon, { y: 0 }, {
+        y: -8,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: card,
+          start: 'top bottom',
+          end: 'bottom top',
+          scrub: true
+        }
       });
-    }
+    });
   }
   // Form fields reveal
   const form = section.querySelector('.inq-form');
@@ -647,8 +678,7 @@
       ease: 'power3.out',
       scrollTrigger: {
         trigger: form,
-        start: 'top 85%',
-        toggleActions: isMobile ? 'play none none none' : 'play none none reverse'
+        start: 'top 85%'
       }
     });
   }
@@ -665,8 +695,7 @@
       ease: 'power3.out',
       scrollTrigger: {
         trigger: phone,
-        start: 'top 85%',
-        toggleActions: isMobile ? 'play none none none' : 'play none none reverse'
+        start: 'top 85%'
       }
     });
   }
@@ -791,19 +820,51 @@
   if (!root) return;
   const tabs = Array.from(root.querySelectorAll('.fs-tab'));
   const panels = Array.from(root.querySelectorAll('.fs-panel'));
+  let switchTl = null;
+
   function activate(key) {
     const tab = tabs.find(t => t.dataset.key === key);
     const panel = panels.find(p => p.id === `fs-${key}`);
     if (!tab || !panel) return;
     const previous = panels.find(p => p.classList.contains('is-active'));
-    tabs.forEach(t => { t.classList.toggle('is-active', t === tab); t.setAttribute('aria-selected', String(t === tab)); });
+
+    tabs.forEach(t => {
+      const isActive = t === tab;
+      t.classList.toggle('is-active', isActive);
+      t.setAttribute('aria-selected', String(isActive));
+    });
+
     if (previous === panel) return;
+
     if (window.gsap) {
-      if (previous) {
-        gsap.to(previous, { opacity: 0, duration: 0.25, onComplete: () => { previous.classList.remove('is-active'); } });
-      }
+      if (switchTl) { switchTl.kill(); switchTl = null; }
       panel.classList.add('is-active');
-      gsap.fromTo(panel, { opacity: 0 }, { opacity: 1, duration: 0.35, ease: 'power2.out' });
+
+      if (previous) gsap.set(previous, { zIndex: 1 });
+      gsap.set(panel, { zIndex: 2, opacity: 0, y: 8 });
+
+      const bubble = panel.querySelector('.fs-bubble');
+
+      switchTl = gsap.timeline({
+        defaults: { ease: 'power3.out' },
+        onComplete: () => {
+          if (previous) {
+            previous.classList.remove('is-active');
+            gsap.set(previous, { clearProps: 'zIndex' });
+          }
+          gsap.set(panel, { clearProps: 'zIndex' });
+          switchTl = null;
+        }
+      });
+
+      if (previous) {
+        switchTl.to(previous, { opacity: 0, y: -6, duration: 0.4 }, 0);
+      }
+      switchTl.to(panel, { opacity: 1, y: 0, duration: 0.5 }, 0);
+
+      if (bubble) {
+        switchTl.fromTo(bubble, { y: 10, opacity: 0 }, { y: 0, opacity: 1, duration: 0.45, ease: 'power2.out' }, 0.1);
+      }
     } else {
       if (previous) previous.classList.remove('is-active');
       panel.classList.add('is-active');
@@ -817,8 +878,8 @@
   if (typeof window === 'undefined' || !window.gsap) return;
   const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (prefersReduced) return;
-  const isMobile = window.matchMedia && window.matchMedia('(max-width: 640px)').matches;
-  if (isMobile) return; // disable global scroll-in animations on mobile to improve performance
+  const isMobileView = window.matchMedia && window.matchMedia('(max-width: 720px)').matches;
+  if (isMobileView) return;
   gsap.registerPlugin(ScrollTrigger);
 
   const fadeUpEach = (selector, opts = {}) => {
@@ -832,7 +893,7 @@
         scrollTrigger: {
           trigger: el,
           start: opts.start ?? 'top 85%',
-          toggleActions: opts.toggleActions ?? 'play none none reverse'
+          toggleActions: 'play none none reverse'
         }
       });
     });
@@ -873,7 +934,7 @@
         duration: 0.45,
         stagger: 0.06,
         ease: 'power2.out',
-        scrollTrigger: { trigger: benefits[0].closest('.rfu'), start: 'top 75%', toggleActions: 'play none none reverse' }
+        scrollTrigger: { trigger: benefits[0].closest('.rfu'), start: 'top 75%' }
       });
     }
   })();
