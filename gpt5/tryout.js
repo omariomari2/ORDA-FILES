@@ -344,29 +344,4 @@
       }
     });
   }
-
-  // Stroke-to-fill scroll shading for mission statement title
-  (function () {
-    if (!window.gsap || !window.ScrollTrigger) return;
-    const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (prefersReduced) return;
-
-    const mission = document.querySelector('.mission-section');
-    const title = mission && mission.querySelector('.section-title');
-    if (!mission || !title) return;
-
-    // Initialize background position to starting state (matches CSS)
-    gsap.set(title, { backgroundPositionX: '180%' });
-
-    gsap.to(title, {
-      backgroundPositionX: '100%',
-      ease: 'none',
-      scrollTrigger: {
-        trigger: mission,
-        start: 'top 80%',
-        end: 'bottom 30%',
-        scrub: true
-      }
-    });
-  })();
 })(); 

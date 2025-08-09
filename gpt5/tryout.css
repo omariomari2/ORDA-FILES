@@ -245,8 +245,6 @@ h1.hero-title {
   max-width: 960px;
   margin: 0 auto;
   text-align: center;
-  display: grid;
-  justify-items: center;
 }
 
 .pill {
@@ -260,47 +258,12 @@ h1.hero-title {
   letter-spacing: 0.4px;
 }
 
-/* Align mission pill to the left edge of the content column */
-.mission-content .pill {
-  justify-self: start;
-  margin-bottom: 12px;
-}
-
-@media (max-width: 768px) {
-  /* Center the pill on small screens for better balance */
-  .mission-content .pill {
-    justify-self: center;
-  }
-}
-
 .section-title {
   font-size: clamp(28px, 4.2vw, 44px);
   line-height: 1.28;
   font-weight: 700;
   margin: 18px auto 44px;
   color: #2a3240;
-}
-/* Stroke-to-fill heading effect for mission statement */
-.mission-section .section-title {
-  /* Start as stroked text with gradient fill clipped to text */
-  color: transparent;
-  -webkit-text-stroke: 2px #2a3240;
-  background-image: linear-gradient(90deg, #2a3240 0 0);
-  background-size: 200% 1em; /* fallback */
-  background-size: 200% 1lh; /* preferred when supported */
-  background-repeat: no-repeat;
-  background-position-x: 180%;
-  background-position-y: 100%;
-  -webkit-background-clip: text;
-          background-clip: text;
-  display: inline;
-}
-
-@media (max-width: 768px) {
-  /* Slightly thinner stroke on small screens for readability */
-  .mission-section .section-title {
-    -webkit-text-stroke: 1px #2a3240;
-  }
 }
 
 .mission-illustration {
