@@ -327,6 +327,112 @@
     }
   }
 
+  // Landing full-bleed hero carousel
+  (function initLandingCarousel() {
+    const root = document.querySelector('.landing-carousel');
+    if (!root) return;
+    const track = root.querySelector('.landing-track');
+    const slides = Array.from(root.querySelectorAll('.landing-slide'));
+    const prev = root.querySelector('.landing-btn.prev');
+    const next = root.querySelector('.landing-btn.next');
+    const dotsWrap = root.querySelector('.landing-dots');
+    if (slides.length <= 1) return;
+
+    let index = Math.max(0, slides.findIndex(s => s.classList.contains('is-active')));
+    let timer = null;
+    const autoplaySeconds = 6;
+    const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // Build dots
+    dotsWrap.innerHTML = '';
+    slides.forEach((_, i) => {
+      const dot = document.createElement('button');
+      dot.type = 'button';
+      dot.setAttribute('role', 'tab');
+      dot.setAttribute('aria-label', `Go to slide ${i + 1}`);
+      if (i === index) dot.setAttribute('aria-selected', 'true');
+      dot.addEventListener('click', () => goTo(i));
+      dotsWrap.appendChild(dot);
+    });
+
+    function updateDots(i) {
+      Array.from(dotsWrap.children).forEach((d, di) => {
+        if (di === i) d.setAttribute('aria-selected', 'true');
+        else d.removeAttribute('aria-selected');
+      });
+    }
+
+    function goTo(newIndex) {
+      if (newIndex === index || newIndex < 0 || newIndex >= slides.length) return;
+      const from = slides[index];
+      const to = slides[newIndex];
+      const dir = newIndex > index ? 1 : -1;
+
+      stop();
+
+      if (prefersReduced || !window.gsap) {
+        from.classList.remove('is-active');
+        to.classList.add('is-active');
+        index = newIndex;
+        updateDots(index);
+        start();
+        return;
+      }
+
+      gsap.set(to, { position: 'absolute', inset: 0, opacity: 0, x: 60 * dir, zIndex: 2 });
+      to.classList.add('is-active');
+      gsap.set(from, { zIndex: 1 });
+
+      const tl = gsap.timeline({
+        defaults: { ease: 'power2.out' },
+        onComplete: () => {
+          from.classList.remove('is-active');
+          // Keep slides absolutely positioned to layer content over background without reflow
+          gsap.set(to, { position: 'absolute', inset: 0, clearProps: 'zIndex' });
+          start();
+        }
+      });
+
+      tl.to(from, { opacity: 0, x: -60 * dir, duration: 0.5 }, 0)
+        .to(to, { opacity: 1, x: 0, duration: 0.6 }, 0);
+
+      index = newIndex;
+      updateDots(index);
+    }
+
+    function start() {
+      if (prefersReduced) return;
+      stop();
+      timer = setTimeout(() => goTo((index + 1) % slides.length), autoplaySeconds * 1000);
+    }
+
+    function stop() {
+      if (timer) { clearTimeout(timer); timer = null; }
+    }
+
+    prev.addEventListener('click', () => goTo((index - 1 + slides.length) % slides.length));
+    next.addEventListener('click', () => goTo((index + 1) % slides.length));
+    root.addEventListener('mouseenter', stop);
+    root.addEventListener('mouseleave', start);
+    root.addEventListener('focusin', stop);
+    root.addEventListener('focusout', start);
+
+    // Start when in view
+    if (window.gsap && window.ScrollTrigger) {
+      ScrollTrigger.create({
+        trigger: root,
+        start: 'top 85%',
+        end: 'bottom 15%',
+        onEnter: start,
+        onEnterBack: start,
+        onLeave: stop,
+        onLeaveBack: stop
+      });
+    } else {
+      start();
+    }
+  })();
+
   const mapBlock = document.querySelector('.features-map .map-img');
   const mapWrap = document.querySelector('.features-map');
   if (mapBlock && mapWrap) {
@@ -345,3 +451,127 @@
     });
   }
 })(); 
+
+// FAQ accordion (progressively enhanced)
+(function () {
+  const list = document.querySelector('.faq-list');
+  if (!list) return;
+  list.addEventListener('click', (e) => {
+    const btn = e.target.closest('.faq-question');
+    if (!btn || !list.contains(btn)) return;
+    const expanded = btn.getAttribute('aria-expanded') === 'true';
+    const answer = document.getElementById(btn.getAttribute('aria-controls'));
+    if (!answer) return;
+
+    // Measure content for smooth height animation
+    const setOpen = (open) => {
+      btn.setAttribute('aria-expanded', String(open));
+      if (open) {
+        answer.hidden = false;
+        const contentHeight = answer.scrollHeight;
+        answer.classList.add('is-open');
+        answer.style.maxHeight = contentHeight + 'px';
+      } else {
+        answer.style.maxHeight = answer.scrollHeight + 'px';
+        requestAnimationFrame(() => {
+          answer.classList.remove('is-open');
+          answer.style.maxHeight = '0px';
+        });
+        answer.addEventListener('transitionend', function onEnd() {
+          answer.hidden = true;
+          answer.removeEventListener('transitionend', onEnd);
+        });
+      }
+    };
+
+    setOpen(!expanded);
+  });
+})();
+
+// Waitlist animations (GSAP)
+(function () {
+  if (typeof window === 'undefined' || !window.gsap) return;
+  const section = document.querySelector('.waitlist-section');
+  if (!section) return;
+
+  const cards = Array.from(section.querySelectorAll('.wl-card'));
+  const title = section.querySelector('.waitlist-title, .inquiry-title');
+  gsap.registerPlugin(ScrollTrigger);
+
+  if (title) {
+    gsap.from(title, {
+      y: 24,
+      opacity: 0,
+      duration: 0.6,
+      ease: 'power3.out',
+      scrollTrigger: {
+        trigger: section,
+        start: 'top 80%',
+      }
+    });
+  }
+
+  if (cards.length) {
+    gsap.from(cards, {
+      y: 40,
+      opacity: 0,
+      rotateX: -10,
+      duration: 0.7,
+      ease: 'power3.out',
+      stagger: 0.12,
+      scrollTrigger: {
+        trigger: section,
+        start: 'top 75%'
+      }
+    });
+
+    // subtle parallax on icons
+    cards.forEach((card) => {
+      const icon = card.querySelector('.wl-icon');
+      if (!icon) return;
+      gsap.fromTo(icon, { y: 0 }, {
+        y: -8,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: card,
+          start: 'top bottom',
+          end: 'bottom top',
+          scrub: true
+        }
+      });
+    });
+  }
+  // Form fields reveal
+  const form = section.querySelector('.inq-form');
+  if (form) {
+    const fields = Array.from(form.querySelectorAll('.field, .form-row, textarea'));
+    gsap.from(fields, {
+      y: 18,
+      opacity: 0,
+      duration: 0.5,
+      stagger: 0.06,
+      ease: 'power3.out',
+      scrollTrigger: {
+        trigger: form,
+        start: 'top 85%'
+      }
+    });
+  }
+
+  // Phone mockup float-in
+  const phone = section.querySelector('.phone-frame');
+  if (phone) {
+    gsap.from(phone, {
+      x: 40,
+      y: 20,
+      opacity: 0,
+      rotate: -2,
+      duration: 0.8,
+      ease: 'power3.out',
+      scrollTrigger: {
+        trigger: phone,
+        start: 'top 85%'
+      }
+    });
+  }
+})();
