@@ -12,14 +12,14 @@
 </head>
 <body>
   
-  <section class="landing-section" aria-label="Highlights">
+  <section id="home" class="landing-section" aria-label="Highlights">
     <div class="landing-carousel" role="group" aria-roledescription="carousel" aria-label="Landing promotions" aria-live="polite">
       <div class="landing-track">
-        <article class="landing-slide is-active" style="background-image:url('../images/orda/makola.jpg')" aria-label="Get paid as you work">
+        <article class="landing-slide is-active" style="background-image:url('../images/main.png')" aria-label="Get paid as you work">
           <div class="landing-overlay"></div>
           <div class="landing-content">
-            <h2 class="landing-title">Get paid as you work — up to $150/day</h2>
-            <p class="landing-sub">With a max of $750 per pay period</p>
+            <h2 class="landing-title">Ride Anywhere, Anytime, with ORDA Rides</h2>
+            <p class="landing-sub">Enjoy afforable, safe and premium transportation service</p>
             <a href="#get-started" class="btn btn-primary landing-cta">Get started</a>
           </div>
         </article>
@@ -51,7 +51,7 @@
           </div>
         </article>
 
-        <article class="landing-slide" style="background-image:url('../images/orda/Gemini_Generated_Image_421q36421q36421q.png')" aria-label="Join as a driver">
+        <article class="landing-slide" style="background-image:url('../images/prince.jpg')" aria-label="Join as a driver">
           <div class="landing-overlay"></div>
           <div class="landing-content">
             <h2 class="landing-title">Join ORDA — drive and earn more</h2>
@@ -76,11 +76,18 @@
     <div class="nav-container">
       <a class="nav-brand" href="#home" aria-label="ORDA home">ORDA Rides</a>
       <nav class="nav-links" aria-label="Main navigation">
-        <a href="#individuals">For Individuals</a>
-        <a href="#business">For Business</a>
-        <a href="#about">Who We Are</a>
-        <a href="#impact">Impact</a>
+        <a href="#mission">Mission</a>
+        <a href="#services">Services</a>
+        <a href="#earn">Earn</a>
+        <a href="#faqs">FAQs</a>
+        <a href="#waitlist">Contact</a>
+        <a href="#testimonials">Testimonials</a>
       </nav>
+      <button class="nav-toggle" aria-label="Open menu" aria-controls="mobileNav" aria-expanded="false">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </button>
       <a class="store-badge badge-google nav-store" href="#google-play" aria-label="Get it on Google Play">
         <svg class="logo" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path fill="#ffffff" d="M3.6 1.8l10.2 10.2L3.6 22.2c-.23-.15-.36-.41-.36-.71V2.51c0-.3.13-.56.36-.71z"/><path fill="#3ddc84" d="M14.5 12.01l2.41 2.41-9.65 5.58c-.36.21-.79.2-1.13-.02l8.37-7.97z"/><path fill="#f4b400" d="M19.31 9.93l-2.42 2.42L8.12 4.16l5.05-2.92c.38-.22.86-.21 1.24.02l4.9 2.86c.53.31.53 1.08 0 1.39z"/><path fill="#4285f4" d="M21.2 11.98c.3.17.3.61 0 .78l-2.02 1.18-2.42-2.42 2.42-2.42 2.02 1.17z"/></svg>
         <span class="label"><small>Get it on</small><strong>Google Play</strong></span>
@@ -88,11 +95,33 @@
     </div>
   </header>
 
-  <section class="mission-section" aria-label="Our Mission">
+  <div class="mobile-nav" id="mobileNav" aria-hidden="true">
+    <div class="mobile-nav-panel" role="dialog" aria-modal="true" aria-label="Navigation menu">
+      <button class="mobile-nav-close" aria-label="Close menu" data-close>
+        &times;
+      </button>
+      <nav class="mobile-menu" aria-label="Mobile navigation">
+        <a href="#mission">Mission</a>
+        <a href="#services">Services</a>
+        <a href="#earn">Earn</a>
+        <a href="#faqs">FAQs</a>
+        <a href="#waitlist">Contact</a>
+        <a href="#testimonials">Testimonials</a>
+      </nav>
+      <div class="mobile-store">
+        <a class="store-badge badge-google" href="#google-play" aria-label="Get it on Google Play">
+          <svg class="logo" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path fill="#ffffff" d="M3.6 1.8l10.2 10.2L3.6 22.2c-.23-.15-.36-.41-.36-.71V2.51c0-.3.13-.56.36-.71z"/><path fill="#3ddc84" d="M14.5 12.01l2.41 2.41-9.65 5.58c-.36.21-.79.2-1.13-.02l8.37-7.97z"/><path fill="#f4b400" d="M19.31 9.93l-2.42 2.42L8.12 4.16l5.05-2.92c.38-.22.86-.21 1.24.02l4.9 2.86c.53.31.53 1.08 0 1.39z"/><path fill="#4285f4" d="M21.2 11.98c.3.17.3.61 0 .78l-2.02 1.18-2.42-2.42 2.42-2.42 2.02 1.17z"/></svg>
+          <span class="label"><small>Get it on</small><strong>Google Play</strong></span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <section id="mission" class="mission-section" aria-label="Our Mission">
     <div class="container">
       <div class="mission-content">
         <span class="pill">Our Mission</span>
-        <h2 class="section-title">In Ghana’s rural communities, mobility isn’t just about convenience—it’s about access to opportunity, safety, and dignity.<br>ORDA RIDES exists to make sure no one is left behind.</h2>
+        <h2 class="section-title">In Ghana’s <span class="hl">rural communities</span>, mobility isn’t just about <span class="hl">convenience</span>—it’s about access to <span class="hl">opportunity</span>, <span class="hl">safety</span>, and <span class="hl">dignity</span>.<br><span class="hl-strong">ORDA RIDES</span> exists to make sure <span class="hl">no one is left behind</span>.</h2>
         <div class="flex-gallery" aria-label="Gallery of rides">
           <div class="card"><div class="card__inner"><picture><img src="../images/biker.jpg" alt="Biker"></picture></div></div>
           <div class="card"><div class="card__inner"><picture><img src="../images/biker.jpg" alt="Biker"></picture></div></div>
@@ -114,7 +143,7 @@
   </section>
   
 
-  <section class="features-section" aria-label="Key Features">
+  <section id="services" class="features-section" aria-label="Key Features">
     <div class="container">
       <div class="features-content">
         <span class="pill">Our Services</span>
@@ -182,7 +211,7 @@
     </div>
   </section>
   
-  <section class="earn-section" aria-label="Earn With ORDA">
+  <section id="earn" class="earn-section" aria-label="Earn With ORDA">
     <div class="container earn-header">
       <div class="earn-content">
         <span class="pill">Earn With ORDA</span>
@@ -323,7 +352,9 @@
     </section>
   </section>
 
-  <section class="faq-section" aria-label="Frequently Asked Questions">
+
+
+  <section id="faqs" class="faq-section" aria-label="Frequently Asked Questions">
     <div class="container">
       <h2 class="faq-title">FAQs</h2>
       <div class="faq-list" role="list">
@@ -411,7 +442,7 @@
     </div>
   </section>
 
-  <section class="waitlist-section inquiry" id="waitlist" aria-label="Inquiries">
+  <section id="waitlist" class="waitlist-section inquiry" aria-label="Inquiries">
     <div class="container">
       <div class="inquiry-wrap">
         <div class="inquiry-grid">
@@ -489,6 +520,99 @@
       </div>
     </div>
   </section>
+
+  <section id="testimonials" class="testimonials-section" aria-label="Testimonials">
+    <div class="container">
+      <div class="testimonials-header" style="text-align:center;">
+        <span class="pill">Testimonials</span>
+        <h2 class="section-title">What our riders and partners say</h2>
+      </div>
+    </div>
+
+    <div class="testimonials-gallery" aria-label="Community highlights">
+      <div class="tstl-perspective">
+        <div class="tstl-perspective-inner">
+          <div class="tstl-row row-1">
+            <div class="tstl-item" data-full="../images/orda/makola.jpg"><div class="tstl-bg" style="background-image:url('../images/orda/makola.jpg')"></div></div>
+            <div class="tstl-item" data-full="../images/orda/biker.jpg"><div class="tstl-bg" style="background-image:url('../images/orda/biker.jpg')"></div></div>
+            <div class="tstl-item" data-full="../images/orda/market.jpeg"><div class="tstl-bg" style="background-image:url('../images/orda/market.jpeg')"></div></div>
+            <div class="tstl-item" data-full="../images/okada.png"><div class="tstl-bg" style="background-image:url('../images/okada.png')"></div></div>
+            <div class="tstl-item" data-full="../images/woman.png"><div class="tstl-bg" style="background-image:url('../images/woman.png')"></div></div>
+            <div class="tstl-item" data-full="../images/orda/googlemaps.png"><div class="tstl-bg" style="background-image:url('../images/orda/googlemaps.png')"></div></div>
+          </div>
+          <div class="tstl-row row-2">
+            <div class="tstl-item" data-full="../images/orda/biker.jpg"><div class="tstl-bg" style="background-image:url('../images/orda/biker.jpg')"></div></div>
+            <div class="tstl-item" data-full="../images/orda/makola.jpg"><div class="tstl-bg" style="background-image:url('../images/orda/makola.jpg')"></div></div>
+            <div class="tstl-item" data-full="../images/orda/market.jpeg"><div class="tstl-bg" style="background-image:url('../images/orda/market.jpeg')"></div></div>
+            <div class="tstl-item" data-full="../images/okada.png"><div class="tstl-bg" style="background-image:url('../images/okada.png')"></div></div>
+            <div class="tstl-item" data-full="../images/woman.png"><div class="tstl-bg" style="background-image:url('../images/woman.png')"></div></div>
+            <div class="tstl-item" data-full="../images/orda/Gemini_Generated_Image_421q36421q36421q.png"><div class="tstl-bg" style="background-image:url('../images/orda/Gemini_Generated_Image_421q36421q36421q.png')"></div></div>
+          </div>
+
+
+        </div>
+      </div>
+    </div>
+
+    <div class="tstl-modal" id="testimonialModal" aria-hidden="true">
+      <div class="tstl-modal-backdrop" data-close="true"></div>
+      <div class="tstl-modal-card" role="dialog" aria-modal="true" aria-label="Image preview">
+        <button class="tstl-modal-close" aria-label="Close" data-close="true">&times;</button>
+        <img class="tstl-modal-image" id="testimonialModalImage" alt="Testimonial image" />
+      </div>
+    </div>
+  </section>
+
+  <section class="end-section" aria-label="Wrap up">
+    <div class="end-hero" style="background-image:url('../images/background.png')">
+      <div class="end-overlay" aria-hidden="true"></div>
+      <div class="end-content">
+        <h2>ORDA Rides is coming to your community soon!</h2>
+        <a href="#apply" class="btn btn-dark end-cta">Join Us!</a>
+      </div>
+    </div>
+  </section>
+
+  <footer class="site-footer footer-revamp" aria-label="Footer">
+    <div class="footer-canvas" aria-hidden="true"></div>
+    <div class="footer-wrap">
+      <div class="footer-top">
+        <div class="footer-brand" aria-label="Brand statement">
+          <span>ORDA Rides</span>
+          <span>Your Orders </span>
+          <span>Your Rides</span>
+        </div>
+        <nav class="footer-nav" aria-label="Footer navigation">
+          <ul class="nav-col">
+            <li><a href="#rides">Rides</a></li>
+            <li><a href="#delivery">Delivery</a></li>
+            <li><a href="#news">Local news</a></li>
+            <li><a href="#contact">Contact</a></li>
+            <li><a href="#blog">Blog</a></li>
+          </ul>
+          <ul class="nav-col">
+            <li><a href="#careers">Recruitment</a></li>
+            <li><a href="#faqs">FAQ</a></li>
+            <li><a href="#business">Business</a></li>
+          </ul>
+        </nav>
+      </div>
+
+      <div class="footer-bottom">
+        <div class="footer-social" aria-label="Social links">
+          <a href="#twitter">Twitter</a>
+          <a href="#youtube">Youtube</a>
+          <a href="#linkedin">LinkedIn</a>
+        </div>
+        <div class="footer-legal">
+          <a href="#credits">Credits</a>
+          <a href="#legal">Legal</a>
+          <a href="#cookies">Cookies</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-hero-word" aria-hidden="true">ORDA RIDES</div>
+  </footer>
 
   <!-- GSAP for scroll animations -->
   <script src="https://unpkg.com/gsap@3/dist/gsap.min.js"></script>

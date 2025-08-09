@@ -184,6 +184,9 @@
       dot.setAttribute('role', 'tab');
       dot.setAttribute('aria-label', `Go to slide ${i + 1}`);
       if (i === index) dot.setAttribute('aria-selected', 'true');
+      const prog = document.createElement('span');
+      prog.className = 'dot-progress';
+      dot.appendChild(prog);
       dot.addEventListener('click', () => goTo(i));
       dotsWrap.appendChild(dot);
     });
@@ -192,6 +195,18 @@
       Array.from(dotsWrap.children).forEach((d, di) => {
         if (di === i) d.setAttribute('aria-selected', 'true');
         else d.removeAttribute('aria-selected');
+        let p = d.querySelector('.dot-progress');
+        if (!p) {
+          p = document.createElement('span');
+          p.className = 'dot-progress';
+          d.appendChild(p);
+        }
+        if (window.gsap) {
+          gsap.set(p, { transformOrigin: 'left center', scaleX: 0 });
+        } else {
+          p.style.transformOrigin = 'left center';
+          p.style.transform = 'scaleX(0)';
+        }
       });
     }
 
@@ -340,6 +355,9 @@
 
     let index = Math.max(0, slides.findIndex(s => s.classList.contains('is-active')));
     let timer = null;
+    let progressTween = null;
+    let progressElapsed = 0;
+    let lastProgressIndex = index;
     const autoplaySeconds = 6;
     const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -351,6 +369,9 @@
       dot.setAttribute('role', 'tab');
       dot.setAttribute('aria-label', `Go to slide ${i + 1}`);
       if (i === index) dot.setAttribute('aria-selected', 'true');
+      const prog = document.createElement('span');
+      prog.className = 'dot-progress';
+      dot.appendChild(prog);
       dot.addEventListener('click', () => goTo(i));
       dotsWrap.appendChild(dot);
     });
@@ -359,6 +380,18 @@
       Array.from(dotsWrap.children).forEach((d, di) => {
         if (di === i) d.setAttribute('aria-selected', 'true');
         else d.removeAttribute('aria-selected');
+        let p = d.querySelector('.dot-progress');
+        if (!p) {
+          p = document.createElement('span');
+          p.className = 'dot-progress';
+          d.appendChild(p);
+        }
+        if (window.gsap) {
+          gsap.set(p, { transformOrigin: 'left center', scaleX: 0 });
+        } else {
+          p.style.transformOrigin = 'left center';
+          p.style.transform = 'scaleX(0)';
+        }
       });
     }
 
@@ -398,20 +431,51 @@
 
       index = newIndex;
       updateDots(index);
+      // restart progress for new active dot
+      if (!prefersReduced) {
+        const activeDot = dotsWrap.children[index];
+        const prog = activeDot && activeDot.querySelector('.dot-progress');
+        if (prog && window.gsap) {
+          if (progressTween) { progressTween.kill(); }
+          progressTween = gsap.fromTo(prog, { scaleX: 0 }, { scaleX: 1, duration: autoplaySeconds, ease: 'linear' });
+        }
+      }
     }
 
     function start() {
       if (prefersReduced) return;
       stop();
-      timer = setTimeout(() => goTo((index + 1) % slides.length), autoplaySeconds * 1000);
+      // animate progress on active dot
+      const activeDot = dotsWrap.children[index];
+      const prog = activeDot && activeDot.querySelector('.dot-progress');
+      const remaining = (lastProgressIndex === index ? (autoplaySeconds - progressElapsed) : autoplaySeconds);
+      progressElapsed = 0;
+      lastProgressIndex = index;
+      if (prog && window.gsap) {
+        progressTween = gsap.fromTo(prog, { scaleX: 0 }, { scaleX: 1, duration: remaining, ease: 'linear', onUpdate: () => { /* track elapsed via totalProgress */ }, onComplete: () => { progressElapsed = 0; } });
+      }
+      timer = setTimeout(() => goTo((index + 1) % slides.length), remaining * 1000);
     }
 
     function stop() {
       if (timer) { clearTimeout(timer); timer = null; }
+      if (progressTween) {
+        try {
+          progressElapsed = (progressTween.totalProgress ? progressTween.totalProgress() : 0) * autoplaySeconds;
+        } catch (e) { progressElapsed = 0; }
+        progressTween.kill();
+        progressTween = null;
+      }
     }
 
     prev.addEventListener('click', () => goTo((index - 1 + slides.length) % slides.length));
     next.addEventListener('click', () => goTo((index + 1) % slides.length));
+    
+    // Also allow clicking dots to restart progress immediately
+    dotsWrap.addEventListener('click', () => {
+      stop();
+      start();
+    });
     root.addEventListener('mouseenter', stop);
     root.addEventListener('mouseleave', start);
     root.addEventListener('focusin', stop);
@@ -574,4 +638,117 @@
       }
     });
   }
+})();
+
+// Testimonials modal viewer
+(function () {
+  const gallery = document.querySelector('.testimonials-gallery');
+  if (!gallery) return;
+  const modal = document.getElementById('testimonialModal');
+  const modalImg = document.getElementById('testimonialModalImage');
+  if (!modal || !modalImg) return;
+
+  function open(src) {
+    modalImg.src = src;
+    modal.classList.add('is-open');
+    document.body.style.overflow = 'hidden';
+  }
+  function close() {
+    modal.classList.remove('is-open');
+    modalImg.src = '';
+    document.body.style.overflow = '';
+  }
+
+  gallery.addEventListener('click', (e) => {
+    const item = e.target.closest('.tstl-item');
+    if (!item || !gallery.contains(item)) return;
+    const src = item.getAttribute('data-full');
+    if (src) open(src);
+  });
+
+  modal.addEventListener('click', (e) => {
+    if (e.target.matches('[data-close]') || e.target === modal) close();
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal.classList.contains('is-open')) close();
+  });
+})();
+
+// Navbar scroll shadow and active link highlighting
+(function () {
+  const nav = document.querySelector('.site-nav');
+  const links = Array.from(document.querySelectorAll('.nav-links a[href^="#"]'));
+  if (!nav || links.length === 0) return;
+
+  // Shadow on scroll for sticky nav
+  const onScroll = () => {
+    if (window.scrollY > 4) nav.classList.add('is-scrolled');
+    else nav.classList.remove('is-scrolled');
+  };
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  // Active link highlighting
+  const idToLink = new Map();
+  const observeTargets = [];
+  links.forEach(link => {
+    const id = link.getAttribute('href').slice(1);
+    const sec = document.getElementById(id);
+    if (sec) {
+      idToLink.set(id, link);
+      observeTargets.push(sec);
+    }
+  });
+
+  let currentId = null;
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      const id = entry.target.id;
+      if (entry.isIntersecting) {
+        currentId = id;
+      }
+    });
+    if (currentId) {
+      links.forEach(a => a.classList.remove('is-active'));
+      const active = idToLink.get(currentId);
+      if (active) active.classList.add('is-active');
+    }
+  }, { root: null, rootMargin: '0px 0px -60% 0px', threshold: 0.2 });
+
+  observeTargets.forEach(sec => io.observe(sec));
+})();
+
+// Mobile nav toggle
+(function () {
+  const toggle = document.querySelector('.nav-toggle');
+  const nav = document.getElementById('mobileNav');
+  const panel = nav ? nav.querySelector('.mobile-nav-panel') : null;
+  if (!toggle || !nav || !panel) return;
+
+  const open = () => {
+    nav.classList.add('is-open');
+    nav.setAttribute('aria-hidden', 'false');
+    toggle.setAttribute('aria-expanded', 'true');
+  };
+  const close = () => {
+    nav.classList.remove('is-open');
+    nav.setAttribute('aria-hidden', 'true');
+    toggle.setAttribute('aria-expanded', 'false');
+  };
+
+  toggle.addEventListener('click', () => {
+    const isOpen = nav.classList.contains('is-open');
+    isOpen ? close() : open();
+  });
+
+  nav.addEventListener('click', (e) => {
+    if (e.target === nav || e.target.matches('[data-close]')) close();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && nav.classList.contains('is-open')) close();
+  });
+
+  // Close when a link is clicked
+  nav.querySelectorAll('a[href^="#"]').forEach(a => a.addEventListener('click', close));
 })();
