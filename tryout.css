@@ -1141,7 +1141,7 @@ h1.hero-title {
 }
 @media (max-width: 640px) {
   .tstl-perspective-inner { width: 200vw; height: 100vh; transform: rotateX(22deg) rotateZ(-8deg); gap: 10px; }
-  .tstl-row { grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .tstl-row { grid-template-columns: repeat(3, 1fr); gap: 10px; animation: none !important; }
   .tstl-item { border-radius: 10px; }
 }
 
