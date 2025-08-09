@@ -1,14 +1,27 @@
+(function fixRelativeImagePaths() {
+  try {
+    const replace = (s) => s.replace(/\.\.\/images\//g, 'images/');
+    document.querySelectorAll('[src]').forEach(el => {
+      const v = el.getAttribute('src');
+      if (v && v.includes('../images/')) el.setAttribute('src', replace(v));
+    });
+    document.querySelectorAll('[style]').forEach(el => {
+      const v = el.getAttribute('style');
+      if (v && v.includes('../images/')) el.setAttribute('style', replace(v));
+    });
+    document.querySelectorAll('[data-full]').forEach(el => {
+      const v = el.getAttribute('data-full');
+      if (v && v.includes('../images/')) el.setAttribute('data-full', replace(v));
+    });
+  } catch (_) {}
+})();
+
 (function () {
   const gallery = document.querySelector('.mission-section .flex-gallery');
   if (!gallery) return;
-
   const cards = Array.from(gallery.querySelectorAll('.card'));
   if (cards.length === 0) return;
-
-  // Initially show all as active (opacity), none expanded
   cards.forEach(card => card.classList.add('is-active'));
-
-  // Hover behavior (desktop)
   gallery.addEventListener('mouseenter', event => {
     const card = event.target.closest('.card');
     if (card && gallery.contains(card)) {
@@ -16,26 +29,20 @@
       card.classList.add('is-active');
     }
   }, true);
-
   gallery.addEventListener('mouseleave', () => {
     const anyExpanded = cards.some(c => c.classList.contains('is-expanded'));
     if (!anyExpanded) {
       cards.forEach(c => c.classList.add('is-active'));
     }
   }, true);
-
-  // Click/tap behavior (mobile)
   gallery.addEventListener('click', event => {
     const card = event.target.closest('.card');
     if (!card || !gallery.contains(card)) return;
-
     const wasExpanded = card.classList.contains('is-expanded');
-
     cards.forEach(c => {
       c.classList.remove('is-expanded');
       c.classList.remove('is-active');
     });
-
     if (!wasExpanded) {
       card.classList.add('is-expanded');
       card.classList.add('is-active');
@@ -751,4 +758,107 @@
 
   // Close when a link is clicked
   nav.querySelectorAll('a[href^="#"]').forEach(a => a.addEventListener('click', close));
+})();
+
+// Features split interactions
+(function () {
+  const root = document.querySelector('#services .features-split');
+  if (!root) return;
+  const tabs = Array.from(root.querySelectorAll('.fs-tab'));
+  const panels = Array.from(root.querySelectorAll('.fs-panel'));
+  function activate(key) {
+    const tab = tabs.find(t => t.dataset.key === key);
+    const panel = panels.find(p => p.id === `fs-${key}`);
+    if (!tab || !panel) return;
+    const previous = panels.find(p => p.classList.contains('is-active'));
+    tabs.forEach(t => { t.classList.toggle('is-active', t === tab); t.setAttribute('aria-selected', String(t === tab)); });
+    if (previous === panel) return;
+    if (window.gsap) {
+      if (previous) {
+        gsap.to(previous, { opacity: 0, duration: 0.25, onComplete: () => { previous.classList.remove('is-active'); } });
+      }
+      panel.classList.add('is-active');
+      gsap.fromTo(panel, { opacity: 0 }, { opacity: 1, duration: 0.35, ease: 'power2.out' });
+    } else {
+      if (previous) previous.classList.remove('is-active');
+      panel.classList.add('is-active');
+    }
+  }
+  tabs.forEach(t => t.addEventListener('click', () => activate(t.dataset.key)));
+})();
+
+// Global appear-on-scroll animations
+(function () {
+  if (typeof window === 'undefined' || !window.gsap) return;
+  const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (prefersReduced) return;
+  gsap.registerPlugin(ScrollTrigger);
+
+  const fadeUpEach = (selector, opts = {}) => {
+    gsap.utils.toArray(selector).forEach((el) => {
+      gsap.from(el, {
+        y: opts.y ?? 24,
+        opacity: 0,
+        duration: opts.duration ?? 0.6,
+        ease: opts.ease ?? 'power3.out',
+        clearProps: 'transform,opacity',
+        scrollTrigger: {
+          trigger: el,
+          start: opts.start ?? 'top 85%',
+          toggleActions: 'play none none reverse'
+        }
+      });
+    });
+  };
+
+  // Mission section
+  fadeUpEach('#mission .pill, #mission .section-title, #mission .mission-cta', { y: 26 });
+  // Mission gallery cards (stagger per row)
+  (function () {
+    const cards = gsap.utils.toArray('#mission .flex-gallery .card');
+    if (cards.length) {
+      gsap.from(cards, {
+        y: 30,
+        opacity: 0,
+        duration: 0.6,
+        stagger: 0.08,
+        ease: 'power3.out',
+        scrollTrigger: { trigger: '#mission .flex-gallery', start: 'top 80%', toggleActions: 'play none none reverse' },
+        immediateRender: false
+      });
+    }
+  })();
+
+  // Features split
+  fadeUpEach('#services .fs-left .fs-tab', { x: -18, y: 0, duration: 0.5 });
+  fadeUpEach('#services .fs-right .fs-bubble', { y: 20, duration: 0.5 });
+
+  // Earn subsections: titles, cards, benefits, CTA
+  fadeUpEach('.earn-section .earn-content .pill, .earn-section .earn-content .section-title', { y: 20 });
+  fadeUpEach('.rfu .rfu-title', { y: 20 });
+  fadeUpEach('.rfu .rfu-card', { y: 24 });
+  (function () {
+    const benefits = gsap.utils.toArray('.rfu .rfu-benefits .benefit');
+    if (benefits.length) {
+      gsap.from(benefits, {
+        y: 16,
+        opacity: 0,
+        duration: 0.45,
+        stagger: 0.06,
+        ease: 'power2.out',
+        scrollTrigger: { trigger: benefits[0].closest('.rfu'), start: 'top 75%' }
+      });
+    }
+  })();
+  fadeUpEach('.rfu .rfu-cta', { y: 18, duration: 0.45 });
+
+  // Testimonials
+  fadeUpEach('#testimonials .testimonials-header', { y: 20 });
+  fadeUpEach('.testimonials-gallery', { y: 20, duration: 0.6 });
+
+  // End hero
+  fadeUpEach('.end-section .end-content', { y: 20, duration: 0.6 });
+
+  // Footer
+  fadeUpEach('.site-footer .footer-top, .site-footer .footer-bottom', { y: 18, duration: 0.5 });
 })();
