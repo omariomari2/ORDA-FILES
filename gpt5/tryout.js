@@ -1,14 +1,27 @@
+(function fixRelativeImagePaths() {
+  try {
+    const replace = (s) => s.replace(/\.\.\/images\//g, 'images/');
+    document.querySelectorAll('[src]').forEach(el => {
+      const v = el.getAttribute('src');
+      if (v && v.includes('../images/')) el.setAttribute('src', replace(v));
+    });
+    document.querySelectorAll('[style]').forEach(el => {
+      const v = el.getAttribute('style');
+      if (v && v.includes('../images/')) el.setAttribute('style', replace(v));
+    });
+    document.querySelectorAll('[data-full]').forEach(el => {
+      const v = el.getAttribute('data-full');
+      if (v && v.includes('../images/')) el.setAttribute('data-full', replace(v));
+    });
+  } catch (_) {}
+})();
+
 (function () {
   const gallery = document.querySelector('.mission-section .flex-gallery');
   if (!gallery) return;
-
   const cards = Array.from(gallery.querySelectorAll('.card'));
   if (cards.length === 0) return;
-
-  // Initially show all as active (opacity), none expanded
   cards.forEach(card => card.classList.add('is-active'));
-
-  // Hover behavior (desktop)
   gallery.addEventListener('mouseenter', event => {
     const card = event.target.closest('.card');
     if (card && gallery.contains(card)) {
@@ -16,26 +29,20 @@
       card.classList.add('is-active');
     }
   }, true);
-
   gallery.addEventListener('mouseleave', () => {
     const anyExpanded = cards.some(c => c.classList.contains('is-expanded'));
     if (!anyExpanded) {
       cards.forEach(c => c.classList.add('is-active'));
     }
   }, true);
-
-  // Click/tap behavior (mobile)
   gallery.addEventListener('click', event => {
     const card = event.target.closest('.card');
     if (!card || !gallery.contains(card)) return;
-
     const wasExpanded = card.classList.contains('is-expanded');
-
     cards.forEach(c => {
       c.classList.remove('is-expanded');
       c.classList.remove('is-active');
     });
-
     if (!wasExpanded) {
       card.classList.add('is-expanded');
       card.classList.add('is-active');
@@ -184,6 +191,9 @@
       dot.setAttribute('role', 'tab');
       dot.setAttribute('aria-label', `Go to slide ${i + 1}`);
       if (i === index) dot.setAttribute('aria-selected', 'true');
+      const prog = document.createElement('span');
+      prog.className = 'dot-progress';
+      dot.appendChild(prog);
       dot.addEventListener('click', () => goTo(i));
       dotsWrap.appendChild(dot);
     });
@@ -192,6 +202,18 @@
       Array.from(dotsWrap.children).forEach((d, di) => {
         if (di === i) d.setAttribute('aria-selected', 'true');
         else d.removeAttribute('aria-selected');
+        let p = d.querySelector('.dot-progress');
+        if (!p) {
+          p = document.createElement('span');
+          p.className = 'dot-progress';
+          d.appendChild(p);
+        }
+        if (window.gsap) {
+          gsap.set(p, { transformOrigin: 'left center', scaleX: 0 });
+        } else {
+          p.style.transformOrigin = 'left center';
+          p.style.transform = 'scaleX(0)';
+        }
       });
     }
 
@@ -340,6 +362,9 @@
 
     let index = Math.max(0, slides.findIndex(s => s.classList.contains('is-active')));
     let timer = null;
+    let progressTween = null;
+    let progressElapsed = 0;
+    let lastProgressIndex = index;
     const autoplaySeconds = 6;
     const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -351,6 +376,9 @@
       dot.setAttribute('role', 'tab');
       dot.setAttribute('aria-label', `Go to slide ${i + 1}`);
       if (i === index) dot.setAttribute('aria-selected', 'true');
+      const prog = document.createElement('span');
+      prog.className = 'dot-progress';
+      dot.appendChild(prog);
       dot.addEventListener('click', () => goTo(i));
       dotsWrap.appendChild(dot);
     });
@@ -359,6 +387,18 @@
       Array.from(dotsWrap.children).forEach((d, di) => {
         if (di === i) d.setAttribute('aria-selected', 'true');
         else d.removeAttribute('aria-selected');
+        let p = d.querySelector('.dot-progress');
+        if (!p) {
+          p = document.createElement('span');
+          p.className = 'dot-progress';
+          d.appendChild(p);
+        }
+        if (window.gsap) {
+          gsap.set(p, { transformOrigin: 'left center', scaleX: 0 });
+        } else {
+          p.style.transformOrigin = 'left center';
+          p.style.transform = 'scaleX(0)';
+        }
       });
     }
 
@@ -398,20 +438,51 @@
 
       index = newIndex;
       updateDots(index);
+      // restart progress for new active dot
+      if (!prefersReduced) {
+        const activeDot = dotsWrap.children[index];
+        const prog = activeDot && activeDot.querySelector('.dot-progress');
+        if (prog && window.gsap) {
+          if (progressTween) { progressTween.kill(); }
+          progressTween = gsap.fromTo(prog, { scaleX: 0 }, { scaleX: 1, duration: autoplaySeconds, ease: 'linear' });
+        }
+      }
     }
 
     function start() {
       if (prefersReduced) return;
       stop();
-      timer = setTimeout(() => goTo((index + 1) % slides.length), autoplaySeconds * 1000);
+      // animate progress on active dot
+      const activeDot = dotsWrap.children[index];
+      const prog = activeDot && activeDot.querySelector('.dot-progress');
+      const remaining = (lastProgressIndex === index ? (autoplaySeconds - progressElapsed) : autoplaySeconds);
+      progressElapsed = 0;
+      lastProgressIndex = index;
+      if (prog && window.gsap) {
+        progressTween = gsap.fromTo(prog, { scaleX: 0 }, { scaleX: 1, duration: remaining, ease: 'linear', onUpdate: () => { /* track elapsed via totalProgress */ }, onComplete: () => { progressElapsed = 0; } });
+      }
+      timer = setTimeout(() => goTo((index + 1) % slides.length), remaining * 1000);
     }
 
     function stop() {
       if (timer) { clearTimeout(timer); timer = null; }
+      if (progressTween) {
+        try {
+          progressElapsed = (progressTween.totalProgress ? progressTween.totalProgress() : 0) * autoplaySeconds;
+        } catch (e) { progressElapsed = 0; }
+        progressTween.kill();
+        progressTween = null;
+      }
     }
 
     prev.addEventListener('click', () => goTo((index - 1 + slides.length) % slides.length));
     next.addEventListener('click', () => goTo((index + 1) % slides.length));
+    
+    // Also allow clicking dots to restart progress immediately
+    dotsWrap.addEventListener('click', () => {
+      stop();
+      start();
+    });
     root.addEventListener('mouseenter', stop);
     root.addEventListener('mouseleave', start);
     root.addEventListener('focusin', stop);
@@ -574,4 +645,220 @@
       }
     });
   }
+})();
+
+// Testimonials modal viewer
+(function () {
+  const gallery = document.querySelector('.testimonials-gallery');
+  if (!gallery) return;
+  const modal = document.getElementById('testimonialModal');
+  const modalImg = document.getElementById('testimonialModalImage');
+  if (!modal || !modalImg) return;
+
+  function open(src) {
+    modalImg.src = src;
+    modal.classList.add('is-open');
+    document.body.style.overflow = 'hidden';
+  }
+  function close() {
+    modal.classList.remove('is-open');
+    modalImg.src = '';
+    document.body.style.overflow = '';
+  }
+
+  gallery.addEventListener('click', (e) => {
+    const item = e.target.closest('.tstl-item');
+    if (!item || !gallery.contains(item)) return;
+    const src = item.getAttribute('data-full');
+    if (src) open(src);
+  });
+
+  modal.addEventListener('click', (e) => {
+    if (e.target.matches('[data-close]') || e.target === modal) close();
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal.classList.contains('is-open')) close();
+  });
+})();
+
+// Navbar scroll shadow and active link highlighting
+(function () {
+  const nav = document.querySelector('.site-nav');
+  const links = Array.from(document.querySelectorAll('.nav-links a[href^="#"]'));
+  if (!nav || links.length === 0) return;
+
+  // Shadow on scroll for sticky nav
+  const onScroll = () => {
+    if (window.scrollY > 4) nav.classList.add('is-scrolled');
+    else nav.classList.remove('is-scrolled');
+  };
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  // Active link highlighting
+  const idToLink = new Map();
+  const observeTargets = [];
+  links.forEach(link => {
+    const id = link.getAttribute('href').slice(1);
+    const sec = document.getElementById(id);
+    if (sec) {
+      idToLink.set(id, link);
+      observeTargets.push(sec);
+    }
+  });
+
+  let currentId = null;
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      const id = entry.target.id;
+      if (entry.isIntersecting) {
+        currentId = id;
+      }
+    });
+    if (currentId) {
+      links.forEach(a => a.classList.remove('is-active'));
+      const active = idToLink.get(currentId);
+      if (active) active.classList.add('is-active');
+    }
+  }, { root: null, rootMargin: '0px 0px -60% 0px', threshold: 0.2 });
+
+  observeTargets.forEach(sec => io.observe(sec));
+})();
+
+// Mobile nav toggle
+(function () {
+  const toggle = document.querySelector('.nav-toggle');
+  const nav = document.getElementById('mobileNav');
+  const panel = nav ? nav.querySelector('.mobile-nav-panel') : null;
+  if (!toggle || !nav || !panel) return;
+
+  const open = () => {
+    nav.classList.add('is-open');
+    nav.setAttribute('aria-hidden', 'false');
+    toggle.setAttribute('aria-expanded', 'true');
+  };
+  const close = () => {
+    nav.classList.remove('is-open');
+    nav.setAttribute('aria-hidden', 'true');
+    toggle.setAttribute('aria-expanded', 'false');
+  };
+
+  toggle.addEventListener('click', () => {
+    const isOpen = nav.classList.contains('is-open');
+    isOpen ? close() : open();
+  });
+
+  nav.addEventListener('click', (e) => {
+    if (e.target === nav || e.target.matches('[data-close]')) close();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && nav.classList.contains('is-open')) close();
+  });
+
+  // Close when a link is clicked
+  nav.querySelectorAll('a[href^="#"]').forEach(a => a.addEventListener('click', close));
+})();
+
+// Features split interactions
+(function () {
+  const root = document.querySelector('#services .features-split');
+  if (!root) return;
+  const tabs = Array.from(root.querySelectorAll('.fs-tab'));
+  const panels = Array.from(root.querySelectorAll('.fs-panel'));
+  function activate(key) {
+    const tab = tabs.find(t => t.dataset.key === key);
+    const panel = panels.find(p => p.id === `fs-${key}`);
+    if (!tab || !panel) return;
+    const previous = panels.find(p => p.classList.contains('is-active'));
+    tabs.forEach(t => { t.classList.toggle('is-active', t === tab); t.setAttribute('aria-selected', String(t === tab)); });
+    if (previous === panel) return;
+    if (window.gsap) {
+      if (previous) {
+        gsap.to(previous, { opacity: 0, duration: 0.25, onComplete: () => { previous.classList.remove('is-active'); } });
+      }
+      panel.classList.add('is-active');
+      gsap.fromTo(panel, { opacity: 0 }, { opacity: 1, duration: 0.35, ease: 'power2.out' });
+    } else {
+      if (previous) previous.classList.remove('is-active');
+      panel.classList.add('is-active');
+    }
+  }
+  tabs.forEach(t => t.addEventListener('click', () => activate(t.dataset.key)));
+})();
+
+// Global appear-on-scroll animations
+(function () {
+  if (typeof window === 'undefined' || !window.gsap) return;
+  const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (prefersReduced) return;
+  gsap.registerPlugin(ScrollTrigger);
+
+  const fadeUpEach = (selector, opts = {}) => {
+    gsap.utils.toArray(selector).forEach((el) => {
+      gsap.from(el, {
+        y: opts.y ?? 24,
+        opacity: 0,
+        duration: opts.duration ?? 0.6,
+        ease: opts.ease ?? 'power3.out',
+        clearProps: 'transform,opacity',
+        scrollTrigger: {
+          trigger: el,
+          start: opts.start ?? 'top 85%',
+          toggleActions: 'play none none reverse'
+        }
+      });
+    });
+  };
+
+  // Mission section
+  fadeUpEach('#mission .pill, #mission .section-title, #mission .mission-cta', { y: 26 });
+  // Mission gallery cards (stagger per row)
+  (function () {
+    const cards = gsap.utils.toArray('#mission .flex-gallery .card');
+    if (cards.length) {
+      gsap.from(cards, {
+        y: 30,
+        opacity: 0,
+        duration: 0.6,
+        stagger: 0.08,
+        ease: 'power3.out',
+        scrollTrigger: { trigger: '#mission .flex-gallery', start: 'top 80%', toggleActions: 'play none none reverse' },
+        immediateRender: false
+      });
+    }
+  })();
+
+  // Features split
+  fadeUpEach('#services .fs-left .fs-tab', { x: -18, y: 0, duration: 0.5 });
+  fadeUpEach('#services .fs-right .fs-bubble', { y: 20, duration: 0.5 });
+
+  // Earn subsections: titles, cards, benefits, CTA
+  fadeUpEach('.earn-section .earn-content .pill, .earn-section .earn-content .section-title', { y: 20 });
+  fadeUpEach('.rfu .rfu-title', { y: 20 });
+  fadeUpEach('.rfu .rfu-card', { y: 24 });
+  (function () {
+    const benefits = gsap.utils.toArray('.rfu .rfu-benefits .benefit');
+    if (benefits.length) {
+      gsap.from(benefits, {
+        y: 16,
+        opacity: 0,
+        duration: 0.45,
+        stagger: 0.06,
+        ease: 'power2.out',
+        scrollTrigger: { trigger: benefits[0].closest('.rfu'), start: 'top 75%' }
+      });
+    }
+  })();
+  fadeUpEach('.rfu .rfu-cta', { y: 18, duration: 0.45 });
+
+  // Testimonials
+  fadeUpEach('#testimonials .testimonials-header', { y: 20 });
+  fadeUpEach('.testimonials-gallery', { y: 20, duration: 0.6 });
+
+  // End hero
+  fadeUpEach('.end-section .end-content', { y: 20, duration: 0.6 });
+
+  // Footer
+  fadeUpEach('.site-footer .footer-top, .site-footer .footer-bottom', { y: 18, duration: 0.5 });
 })();
