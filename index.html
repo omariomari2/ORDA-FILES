@@ -9,6 +9,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="tryout.css">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Crect width='256' height='256' rx='56' ry='56' fill='%230a0a0a'/%3E%3Ctext x='50%25' y='58%25' text-anchor='middle' dominant-baseline='middle' font-family='Plus Jakarta Sans, Arial, sans-serif' font-size='168' font-weight='800' fill='%23ffffff'%3EO%3C/text%3E%3C/svg%3E" />
+  <!-- Performance hints -->
+  <link rel="preconnect" href="https://unpkg.com">
+  <link rel="preload" as="image" href="images/main.png" fetchpriority="high">
 
 </head>
 <body>
@@ -25,7 +28,7 @@
           </div>
         </article>
 
-        <article class="landing-slide" style="background-image:url('../images/orda/biker.jpg')" aria-label="Safe, affordable rides">
+        <article class="landing-slide" data-bg="images/orda/biker.jpg" aria-label="Safe, affordable rides">
           <div class="landing-overlay"></div>
           <div class="landing-content">
             <h2 class="landing-title">Safe, affordable rides in your community</h2>
@@ -34,7 +37,7 @@
           </div>
         </article>
 
-        <article class="landing-slide" style="background-image:url('../images/orda/market.jpeg')" aria-label="Fast local delivery">
+        <article class="landing-slide" data-bg="images/orda/market.jpeg" aria-label="Fast local delivery">
           <div class="landing-overlay"></div>
           <div class="landing-content">
             <h2 class="landing-title">Deliver anything — fast</h2>
@@ -43,7 +46,7 @@
           </div>
         </article>
 
-        <article class="landing-slide" style="background-image:url('../images/orda/googlemaps.png')" aria-label="Hyper‑local news updates">
+        <article class="landing-slide" data-bg="images/orda/googlemaps.png" aria-label="Hyper‑local news updates">
           <div class="landing-overlay"></div>
           <div class="landing-content">
             <h2 class="landing-title">Stay ahead with hyper‑local news</h2>
@@ -52,7 +55,7 @@
           </div>
         </article>
 
-        <article class="landing-slide" style="background-image:url('../images/prince.jpg')" aria-label="Join as a driver">
+        <article class="landing-slide" data-bg="images/prince.jpg" aria-label="Join as a driver">
           <div class="landing-overlay"></div>
           <div class="landing-content">
             <h2 class="landing-title">Join ORDA — drive and earn more</h2>
@@ -72,7 +75,7 @@
       </div>
     </div>
   </section>
-
+  
   <header class="site-nav" aria-label="Primary">
     <div class="nav-container">
       <a class="nav-brand" href="#home" aria-label="ORDA home">ORDA Rides</a>
@@ -137,63 +140,63 @@
       <div class="card is-active" role="listitem">
         <div class="card__inner">
           <picture>
-            <img src="images/orda/biker.jpg" alt="ORDA rider on a motorbike" />
+            <img src="images/orda/biker.jpg" alt="ORDA rider on a motorbike" loading="lazy" decoding="async" />
           </picture>
         </div>
       </div>
       <div class="card is-active" role="listitem">
         <div class="card__inner">
           <picture>
-            <img src="images/orda/makola.jpg" alt="Makola market scene" />
+            <img src="images/orda/makola.jpg" alt="Makola market scene" loading="lazy" decoding="async" />
           </picture>
         </div>
       </div>
       <div class="card is-active" role="listitem">
         <div class="card__inner">
           <picture>
-            <img src="images/okada.png" alt="Okada motorbike" />
+            <img src="images/okada.png" alt="Okada motorbike" loading="lazy" decoding="async" />
           </picture>
         </div>
       </div>
       <div class="card is-active" role="listitem">
         <div class="card__inner">
           <picture>
-            <img src="images/orda/market.jpeg" alt="Local market" />
+            <img src="images/orda/market.jpeg" alt="Local market" loading="lazy" decoding="async" />
           </picture>
         </div>
       </div>
       <div class="card is-active" role="listitem">
         <div class="card__inner">
           <picture>
-            <img src="images/woman.png" alt="Business owner portrait" />
+            <img src="images/woman.png" alt="Business owner portrait" loading="lazy" decoding="async" />
           </picture>
         </div>
       </div>
       <div class="card is-active" role="listitem">
         <div class="card__inner">
           <picture>
-            <img src="images/orda/googlemaps.png" alt="Map view" />
+            <img src="images/orda/googlemaps.png" alt="Map view" loading="lazy" decoding="async" />
           </picture>
         </div>
       </div>
       <div class="card is-active" role="listitem">
         <div class="card__inner">
           <picture>
-            <img src="images/prince.jpg" alt="Community member portrait" />
+            <img src="images/prince.jpg" alt="Community member portrait" loading="lazy" decoding="async" />
           </picture>
         </div>
       </div>
       <div class="card is-active" role="listitem">
         <div class="card__inner">
           <picture>
-            <img src="images/guy.jpg" alt="Rider portrait" />
+            <img src="images/guy.jpg" alt="Rider portrait" loading="lazy" decoding="async" />
           </picture>
         </div>
       </div>
       <div class="card is-active" role="listitem">
         <div class="card__inner">
           <picture>
-            <img src="images/moto.png" alt="Motorbike" />
+            <img src="images/moto.png" alt="Motorbike" loading="lazy" decoding="async" />
           </picture>
         </div>
       </div>
@@ -216,21 +219,21 @@
       </div>
       <div class="fs-right">
         <article class="fs-panel is-active" id="fs-rides" role="tabpanel" aria-label="Rides">
-          <div class="fs-bg" style="background-image:url('images/orda/biker.jpg');"></div>
+          <div class="fs-bg" data-bg="images/orda/biker.jpg"></div>
           <div class="fs-bubble">
             <strong>Order rides in seconds</strong>
             <p>Upfront pricing, live tracking, and built‑in safety sharing for peace of mind.</p>
           </div>
         </article>
         <article class="fs-panel" id="fs-delivery" role="tabpanel" aria-label="Delivery">
-          <div class="fs-bg" style="background-image:url('images/okada.png');"></div>
+          <div class="fs-bg" data-bg="images/okada.png"></div>
           <div class="fs-bubble">
             <strong>Deliver anything — fast</strong>
             <p>Door‑to‑door parcels with OTP handoff and photo proof.</p>
           </div>
         </article>
         <article class="fs-panel" id="fs-news" role="tabpanel" aria-label="Local News">
-          <div class="fs-bg" style="background-image:url('images/orda/googlemaps.png');"></div> 
+          <div class="fs-bg" data-bg="images/orda/googlemaps.png"></div> 
           <div class="fs-bubble">
             <strong>Stay ahead with local alerts</strong>
             <p>Road closures, market info, and safety updates tailored to your area.</p>
@@ -265,7 +268,7 @@
             </blockquote>
           </div>
           <div class="rfu-person">
-            <img src="../images/okada.png" alt="ORDA rider" />
+            <img src="../images/okada.png" alt="ORDA rider" loading="lazy" decoding="async" />
           </div>
         </div>
 
@@ -331,7 +334,7 @@
             </blockquote>
           </div>
           <div class="rfu-person">
-            <img src="../images/woman.png" alt="Business owner" />
+            <img src="../images/woman.png" alt="Business owner" loading="lazy" decoding="async" />
           </div>
         </div>
 
@@ -587,7 +590,7 @@
       <div class="tstl-modal-backdrop" data-close="true"></div>
       <div class="tstl-modal-card" role="dialog" aria-modal="true" aria-label="Image preview">
         <button class="tstl-modal-close" aria-label="Close" data-close="true">&times;</button>
-        <img class="tstl-modal-image" id="testimonialModalImage" alt="Testimonial image" />
+        <img class="tstl-modal-image" id="testimonialModalImage" alt="Testimonial image" loading="lazy" decoding="async" />
       </div>
     </div>
   </section>

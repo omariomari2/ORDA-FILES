@@ -1340,3 +1340,9 @@ h1.hero-title {
   color: #4b5563;
   font-size: clamp(11px, 1.2vw, 13px);
 }
+
+/* Performance containment for below-the-fold sections */
+#services, #earn, #faqs, #waitlist, #testimonials, .end-section, .site-footer {
+  content-visibility: auto;
+  contain-intrinsic-size: 1000px 800px;
+}

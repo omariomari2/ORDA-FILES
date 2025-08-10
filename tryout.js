@@ -268,6 +268,15 @@
       const toEl = slides[newIndex];
       const direction = newIndex > index ? 1 : -1;
 
+      // Ensure background image for target slide if using data-bg
+      (function ensureSlideBackground(el){
+        if (!el) return;
+        const bg = el.getAttribute('data-bg');
+        if (bg && (!el.style.backgroundImage || el.style.backgroundImage === '')) {
+          el.style.backgroundImage = `url('${bg}')`;
+        }
+      })(toEl);
+
       // Pause autoplay while transitioning
       stopAutoplay();
 
@@ -335,7 +344,7 @@
       mq.addEventListener ? mq.addEventListener('change', handler) : mq.addListener(handler);
     }
 
-    // Start autoplay only when in view
+    // Start when in view
     if (window.gsap && window.ScrollTrigger) {
       ScrollTrigger.create({
         trigger: carouselRoot,
@@ -369,6 +378,19 @@
     let lastProgressIndex = index;
     const autoplaySeconds = 6;
     const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // Helper to set background from data-bg lazily
+    const ensureSlideBackground = (el) => {
+      if (!el) return;
+      const bg = el.getAttribute('data-bg');
+      if (bg && (!el.style.backgroundImage || el.style.backgroundImage === '')) {
+        el.style.backgroundImage = `url('${bg}')`;
+      }
+    };
+
+    // Ensure current and next slides have backgrounds ready
+    ensureSlideBackground(slides[index]);
+    ensureSlideBackground(slides[(index + 1) % slides.length]);
 
     // Build dots
     dotsWrap.innerHTML = '';
@@ -409,6 +431,10 @@
       const from = slides[index];
       const to = slides[newIndex];
       const dir = newIndex > index ? 1 : -1;
+
+      // Lazy-assign background for target slide and prefetch next
+      ensureSlideBackground(to);
+      ensureSlideBackground(slides[(newIndex + 1) % slides.length]);
 
       stop();
 
@@ -454,7 +480,6 @@
     function start() {
       if (prefersReduced) return;
       stop();
-      // animate progress on active dot
       const activeDot = dotsWrap.children[index];
       const prog = activeDot && activeDot.querySelector('.dot-progress');
       const remaining = (lastProgressIndex === index ? (autoplaySeconds - progressElapsed) : autoplaySeconds);
@@ -744,6 +769,19 @@
   });
 })();
 
+// Pause testimonial animations when offscreen
+(function () {
+  const gallery = document.querySelector('.testimonials-gallery');
+  if (!gallery) return;
+  const rows = Array.from(gallery.querySelectorAll('.tstl-row'));
+  if (rows.length === 0) return;
+  const setState = (running) => rows.forEach(r => { r.style.animationPlayState = running ? 'running' : 'paused'; });
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(entry => setState(entry.isIntersecting));
+  }, { threshold: 0.05 });
+  io.observe(gallery);
+})();
+
 // Navbar scroll shadow and active link highlighting
 (function () {
   const nav = document.querySelector('.site-nav');
@@ -828,6 +866,17 @@
   if (!root) return;
   const tabs = Array.from(root.querySelectorAll('.fs-tab'));
   const panels = Array.from(root.querySelectorAll('.fs-panel'));
+
+  // Ensure active panel background is loaded
+  (function initActivePanelBg() {
+    const initial = panels.find(p => p.classList.contains('is-active'));
+    if (!initial) return;
+    const bgEl = initial.querySelector('.fs-bg[data-bg]');
+    if (bgEl && (!bgEl.style.backgroundImage || bgEl.style.backgroundImage === '')) {
+      bgEl.style.backgroundImage = `url('${bgEl.dataset.bg}')`;
+    }
+  })();
+
   function activate(key) {
     const tab = tabs.find(t => t.dataset.key === key);
     const panel = panels.find(p => p.id === `fs-${key}`);
@@ -840,10 +889,19 @@
         gsap.to(previous, { opacity: 0, duration: 0.25, onComplete: () => { previous.classList.remove('is-active'); } });
       }
       panel.classList.add('is-active');
+      // Lazy background set for active panel
+      const bgEl = panel.querySelector('.fs-bg[data-bg]');
+      if (bgEl && (!bgEl.style.backgroundImage || bgEl.style.backgroundImage === '')) {
+        bgEl.style.backgroundImage = `url('${bgEl.dataset.bg}')`;
+      }
       gsap.fromTo(panel, { opacity: 0 }, { opacity: 1, duration: 0.35, ease: 'power2.out' });
     } else {
       if (previous) previous.classList.remove('is-active');
       panel.classList.add('is-active');
+      const bgEl = panel.querySelector('.fs-bg[data-bg]');
+      if (bgEl && (!bgEl.style.backgroundImage || bgEl.style.backgroundImage === '')) {
+        bgEl.style.backgroundImage = `url('${bgEl.dataset.bg}')`;
+      }
     }
   }
   tabs.forEach(t => t.addEventListener('click', () => activate(t.dataset.key)));
