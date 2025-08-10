@@ -719,33 +719,23 @@
     document.body.style.overflow = '';
   }
 
-  // Bring card forward on click
   gallery.addEventListener('click', (e) => {
     const item = e.target.closest('.tstl-item');
     if (!item || !gallery.contains(item)) return;
-    // Toggle focus state; only one at a time
-    const focused = gallery.querySelector('.tstl-item.is-focused');
-    if (focused && focused !== item) focused.classList.remove('is-focused');
-    item.classList.toggle('is-focused');
-  });
-
-  // Click outside any card to remove focus
-  document.addEventListener('click', (e) => {
-    const insideGallery = e.target.closest('.testimonials-gallery');
-    if (!insideGallery) {
-      gallery.querySelectorAll('.tstl-item.is-focused').forEach(el => el.classList.remove('is-focused'));
-    }
-  });
-
-  // Escape to unfocus
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-      gallery.querySelectorAll('.tstl-item.is-focused').forEach(el => el.classList.remove('is-focused'));
-    }
+    // Toggle focus state to bring the card forward
+    const grid = gallery.querySelector('.tstl-perspective-inner');
+    const all = grid ? Array.from(grid.querySelectorAll('.tstl-item')) : [];
+    const wasFocused = item.classList.contains('is-focus');
+    all.forEach(el => el.classList.remove('is-focus'));
+    if (!wasFocused) item.classList.add('is-focus');
   });
 
   modal.addEventListener('click', (e) => {
     if (e.target.matches('[data-close]') || e.target === modal) close();
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal.classList.contains('is-open')) close();
   });
 })();
 
@@ -833,60 +823,19 @@
   if (!root) return;
   const tabs = Array.from(root.querySelectorAll('.fs-tab'));
   const panels = Array.from(root.querySelectorAll('.fs-panel'));
-  let switchTl = null;
-
   function activate(key) {
     const tab = tabs.find(t => t.dataset.key === key);
     const panel = panels.find(p => p.id === `fs-${key}`);
     if (!tab || !panel) return;
     const previous = panels.find(p => p.classList.contains('is-active'));
-
-    tabs.forEach(t => {
-      const isActive = t === tab;
-      t.classList.toggle('is-active', isActive);
-      t.setAttribute('aria-selected', String(isActive));
-    });
-
+    tabs.forEach(t => { t.classList.toggle('is-active', t === tab); t.setAttribute('aria-selected', String(t === tab)); });
     if (previous === panel) return;
-<<<<<<< Updated upstream
-
-    if (window.gsap) {
-      if (switchTl) { switchTl.kill(); switchTl = null; }
-      panel.classList.add('is-active');
-
-      if (previous) gsap.set(previous, { zIndex: 1 });
-      gsap.set(panel, { zIndex: 2, opacity: 0, y: 8 });
-
-      const bubble = panel.querySelector('.fs-bubble');
-
-      switchTl = gsap.timeline({
-        defaults: { ease: 'power3.out' },
-        onComplete: () => {
-          if (previous) {
-            previous.classList.remove('is-active');
-            gsap.set(previous, { clearProps: 'zIndex' });
-          }
-          gsap.set(panel, { clearProps: 'zIndex' });
-          switchTl = null;
-        }
-      });
-
-      if (previous) {
-        switchTl.to(previous, { opacity: 0, y: -6, duration: 0.4 }, 0);
-      }
-      switchTl.to(panel, { opacity: 1, y: 0, duration: 0.5 }, 0);
-
-      if (bubble) {
-        switchTl.fromTo(bubble, { y: 10, opacity: 0 }, { y: 0, opacity: 1, duration: 0.45, ease: 'power2.out' }, 0.1);
-      }
-=======
     if (window.gsap) {
       if (previous) {
         gsap.to(previous, { opacity: 0, duration: 0.25, onComplete: () => { previous.classList.remove('is-active'); } });
       }
       panel.classList.add('is-active');
       gsap.fromTo(panel, { opacity: 0 }, { opacity: 1, duration: 0.35, ease: 'power2.out' });
->>>>>>> Stashed changes
     } else {
       if (previous) previous.classList.remove('is-active');
       panel.classList.add('is-active');
