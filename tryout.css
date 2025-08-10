@@ -1113,18 +1113,10 @@ h1.hero-title {
 
 .testimonials-gallery { position: relative; width: 100vw; margin-left: calc(50% - 50vw); overflow: hidden; }
 .tstl-perspective { perspective: 1200px; perspective-origin: 50% 30%; display: flex; align-items: center; justify-content: center; }
-.tstl-perspective-inner { width: 150vw; height: clamp(48vh, 64vh, 84vh); transform: rotateX(28deg) rotateZ(-12deg); display: grid; grid-template-rows: repeat(2, 1fr); gap: 16px; will-change: transform; }
+.tstl-perspective-inner { width: 150vw; height: clamp(32vh, 46vh, 56vh); transform: rotateX(28deg) rotateZ(-12deg); display: grid; grid-template-rows: repeat(2, 1fr); gap: 16px; will-change: transform; }
 .tstl-row { display: grid; grid-template-columns: repeat(6, 1fr); gap: 16px; }
-.tstl-item { position: relative; width: 100%; height: 100%; border-radius: 14px; overflow: hidden; cursor: pointer; transition: transform 0.3s ease, box-shadow 0.3s ease; }
-.tstl-item:hover { transform: scale(1.03); }
-.tstl-item.is-focus {
-  z-index: 5;
-  transform: translateZ(120px) scale(1.12);
-  box-shadow: 0 18px 50px rgba(0,0,0,0.22);
-}
-.tstl-item.is-focus .tstl-card {
-  box-shadow: 0 16px 36px rgba(0,0,0,0.16);
-}
+.tstl-item { position: relative; width: 100%; height: 100%; border-radius: 14px; overflow: hidden; cursor: pointer; transition: transform 0.3s ease; }
+.tstl-item:hover { transform: scale(1.05); }
 .tstl-bg { position: absolute; inset: 0; background-size: cover; background-position: center; }
 
 @keyframes tstlFloatLeft { 0%,100% { transform: translateX(-40px); } 50% { transform: translateX(40px); } }
@@ -1144,11 +1136,11 @@ h1.hero-title {
 .tstl-modal-backdrop { position: absolute; inset: 0; }
 
 @media (max-width: 900px) {
-  .tstl-perspective-inner { width: 180vw; height: 100vh; transform: rotateX(24deg) rotateZ(-10deg); gap: 12px; }
+  .tstl-perspective-inner { width: 180vw; height: 50vh; transform: rotateX(24deg) rotateZ(-10deg); gap: 12px; }
   .tstl-row { grid-template-columns: repeat(4, 1fr); gap: 12px; }
 }
 @media (max-width: 640px) {
-  .tstl-perspective-inner { width: 200vw; height: 100vh; transform: rotateX(22deg) rotateZ(-8deg); gap: 10px; }
+  .tstl-perspective-inner { width: 200vw; height: 50vh; transform: rotateX(22deg) rotateZ(-8deg); gap: 10px; }
   .tstl-row { grid-template-columns: repeat(3, 1fr); gap: 10px; }
   .tstl-item { border-radius: 10px; }
 }
@@ -1256,23 +1248,13 @@ h1.hero-title {
 .features-split { width: min(1600px, 96vw); margin: clamp(24px, 4vw, 48px) auto 0; display: grid; grid-template-columns: clamp(320px, 34vw, 520px) 1fr; gap: clamp(20px, 4vw, 40px); align-items: stretch; }
 .fs-left { background: transparent; border: none; border-radius: 0; padding: clamp(16px, 3vw, 22px); display: grid; align-content: end; gap: clamp(10px, 2vw, 18px); box-shadow: none; min-height: clamp(520px, 70vh, 860px); position: relative; }
 .fs-left .fs-tab + .fs-tab { border-top: 1px solid rgba(15,23,42,0.08); }
-.fs-tab { appearance: none; background: transparent; border: none; text-align: left; padding: clamp(18px, 2.8vw, 28px) 14px; font-weight: 500; font-size: clamp(22px, 3vw, 36px); color: #0f172a; border-left: 5px solid transparent; border-radius: 12px; cursor: pointer; letter-spacing: -0.01em; }
+.fs-tab { appearance: none; background: transparent; border: none; text-align: left; padding: clamp(18px, 2.8vw, 28px) 14px; font-weight: 500; font-size: clamp(22px, 3vw, 36px); color: #0f172a; border-left: 5px solid transparent; border-radius: 12px; cursor: pointer; letter-spacing: -0.01em; position: relative; }
 .fs-tab:hover { background: transparent; }
 .fs-tab.is-active { color: #1b3aa6; background: transparent; border-left-color: transparent; box-shadow: none; }
-/* Smooth sliding underline indicator for active feature tab */
-.fs-left { position: relative; }
-.fs-underline {
-  position: absolute;
-  height: 3px;
-  background: #2d63f0;
-  border-radius: 9999px;
-  left: 0;
-  top: 0;
-  width: 0;
-  transform: translate3d(0,0,0);
-  transition: transform 280ms cubic-bezier(0.22, 1, 0.36, 1), width 280ms cubic-bezier(0.22, 1, 0.36, 1);
-  pointer-events: none;
-}
+/* Animated underline for tabs */
+.fs-tab::after { content: ""; position: absolute; left: 14px; right: 14px; bottom: 10px; height: 3px; background: #2d63f0; transform-origin: left center; transform: scaleX(0); transition: transform 260ms ease; pointer-events: none; }
+.fs-tab:hover::after { transform: scaleX(1); }
+.fs-tab.is-active::after { transform: scaleX(1); }
 
 .fs-right { position: relative; min-height: clamp(560px, 70vh, 860px); border-radius: 24px; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.12); }
 .fs-panel { position: absolute; inset: 0; opacity: 0; pointer-events: none; }
@@ -1300,6 +1282,8 @@ h1.hero-title {
     opacity: 0;
     transform: translate3d(0, 14px, 0);
     transition: opacity 260ms ease, transform 260ms ease;
+    transition-delay: var(--reveal-delay, 0ms);
+    backface-visibility: hidden;
     will-change: transform, opacity;
   }
   .reveal.is-visible {
@@ -1313,36 +1297,48 @@ h1.hero-title {
   }
 }
 
-/* Testimonial cards replacing images */
-.tstl-card {
-  position: absolute;
-  inset: 0;
-  display: grid;
-  grid-template-rows: 1fr auto auto;
-  gap: 8px;
-  padding: 12px 14px;
-  background: #ffffff;
-  color: #0b0f14;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+/* ... existing code ... */
+ .testi-card{position:absolute;inset:0;display:flex;flex-direction:column;gap:10px;background:rgba(255,255,255,0.92);border:1px solid rgba(15,23,42,0.08);border-radius:inherit;padding:14px;box-shadow:0 10px 24px rgba(0,0,0,0.06);backdrop-filter:saturate(140%) blur(2px)}
+ .testi-header{display:flex;align-items:center;gap:10px}
+ .testi-avatar{width:36px;height:36px;border-radius:9999px;object-fit:cover;flex:0 0 auto}
+ .testi-id{display:grid;line-height:1.1}
+ .testi-name{font-weight:800;color:#0b0f14;font-size:14px}
+ .testi-meta{font-size:12px;color:#475569}
+ .testi-quote{margin:4px 0 0;color:#111827;font-size:14px;line-height:1.45}
+ /* Ensure card content remains readable atop 3D transform */
+ .tstl-item .testi-card{transform:translateZ(0)}
+/* ... existing code ... */
+
+.tstl-item{position:relative;width:100%;height:100%;border-radius:14px;overflow:hidden;cursor:pointer;transition:transform .3s ease}
+.tstl-item:hover{transform:scale(1.05)}
+/* Reduce perceived height by adding inner padding and clamping card content */
+.testi-card{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:space-between;gap:10px;background:rgba(255,255,255,0.96);border:1px solid rgba(15,23,42,0.1);border-radius:inherit;padding:14px;box-shadow:0 10px 24px rgba(0,0,0,.06);backdrop-filter:saturate(140%) blur(2px)}
+.testi-header{display:flex;align-items:center;gap:12px;order:2;margin-top:8px}
+.testi-avatar{width:42px;height:42px;border-radius:9999px;object-fit:cover;flex:0 0 auto}
+.testi-name{font-weight:800;color:#0b0f14;font-size:16px}
+.testi-meta{font-size:12px;color:#475569}
+.testi-quote{order:1;margin:0;color:#0b0f14;font-size:18px;line-height:1.5;font-weight:800;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+/* Emphasized state (bring forward and scale) */
+.tstl-perspective-inner.has-focus{transition:transform .35s ease, filter .35s ease}
+.tstl-perspective-inner.has-focus .tstl-row{animation-play-state:paused}
+.tstl-item.is-emphasized{z-index:3;transform:scale(1.2) !important;box-shadow:0 18px 40px rgba(0,0,0,.18);overflow:visible}
+.tstl-perspective-inner.has-focus .tstl-item:not(.is-emphasized){opacity:.6;filter:grayscale(.05);transform:scale(.96)}
+@media (max-width:900px){
+  .testi-avatar{width:34px;height:34px}
+  .testi-name{font-size:14px}
+  .testi-meta{font-size:11px}
+  .testi-quote{-webkit-line-clamp:4;font-size:15px}
+  .tstl-item.is-emphasized{transform:scale(1.12) !important}
 }
-.tstl-quote {
-  margin: 0;
-  font-size: clamp(13px, 1.4vw, 16px);
-  line-height: 1.6;
-  color: #0f172a;
-}
-.tstl-author {
-  font-weight: 800;
-  color: #111827;
-  font-size: clamp(12px, 1.3vw, 15px);
-}
-.tstl-role {
-  color: #4b5563;
-  font-size: clamp(11px, 1.2vw, 13px);
+@media (max-width:640px){
+  .testi-quote{-webkit-line-clamp:3;font-size:14px}
+  .testi-name{font-size:13px}
+  .tstl-item.is-emphasized{transform:scale(1.08) !important}
 }
 
-/* Performance containment for below-the-fold sections */
-#services, #earn, #faqs, #waitlist, #testimonials, .end-section, .site-footer {
-  content-visibility: auto;
-  contain-intrinsic-size: 1000px 800px;
+@media (max-width: 720px) {
+  #mission .pill,
+  #mission .section-title {
+    contain: paint;
+  }
 }

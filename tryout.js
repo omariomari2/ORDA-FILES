@@ -64,11 +64,11 @@
   if (!window.gsap) return;
   gsap.registerPlugin(ScrollTrigger);
 
-  const pill = section.querySelector('.pill');
-  const title = section.querySelector('.section-title');
-  const sub = section.querySelector('.section-sub');
-  const grid = section.querySelector('.features-grid');
-  const featureCards = grid ? Array.from(grid.querySelectorAll('.feature-card')) : [];
+  const pill = null;
+  const title = null;
+  const sub = null;
+  const grid = null;
+  const featureCards = [];
 
   // Intro text animation
   if (pill || title || sub) {
@@ -268,15 +268,6 @@
       const toEl = slides[newIndex];
       const direction = newIndex > index ? 1 : -1;
 
-      // Ensure background image for target slide if using data-bg
-      (function ensureSlideBackground(el){
-        if (!el) return;
-        const bg = el.getAttribute('data-bg');
-        if (bg && (!el.style.backgroundImage || el.style.backgroundImage === '')) {
-          el.style.backgroundImage = `url('${bg}')`;
-        }
-      })(toEl);
-
       // Pause autoplay while transitioning
       stopAutoplay();
 
@@ -344,7 +335,7 @@
       mq.addEventListener ? mq.addEventListener('change', handler) : mq.addListener(handler);
     }
 
-    // Start when in view
+    // Start autoplay only when in view
     if (window.gsap && window.ScrollTrigger) {
       ScrollTrigger.create({
         trigger: carouselRoot,
@@ -378,19 +369,6 @@
     let lastProgressIndex = index;
     const autoplaySeconds = 6;
     const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-    // Helper to set background from data-bg lazily
-    const ensureSlideBackground = (el) => {
-      if (!el) return;
-      const bg = el.getAttribute('data-bg');
-      if (bg && (!el.style.backgroundImage || el.style.backgroundImage === '')) {
-        el.style.backgroundImage = `url('${bg}')`;
-      }
-    };
-
-    // Ensure current and next slides have backgrounds ready
-    ensureSlideBackground(slides[index]);
-    ensureSlideBackground(slides[(index + 1) % slides.length]);
 
     // Build dots
     dotsWrap.innerHTML = '';
@@ -431,10 +409,6 @@
       const from = slides[index];
       const to = slides[newIndex];
       const dir = newIndex > index ? 1 : -1;
-
-      // Lazy-assign background for target slide and prefetch next
-      ensureSlideBackground(to);
-      ensureSlideBackground(slides[(newIndex + 1) % slides.length]);
 
       stop();
 
@@ -480,6 +454,7 @@
     function start() {
       if (prefersReduced) return;
       stop();
+      // animate progress on active dot
       const activeDot = dotsWrap.children[index];
       const prog = activeDot && activeDot.querySelector('.dot-progress');
       const remaining = (lastProgressIndex === index ? (autoplaySeconds - progressElapsed) : autoplaySeconds);
@@ -510,7 +485,10 @@
       stop();
       start();
     });
-    // Do not pause on hover or focus; keep autoplay continuous
+    root.addEventListener('mouseenter', stop);
+    root.addEventListener('mouseleave', start);
+    root.addEventListener('focusin', stop);
+    root.addEventListener('focusout', start);
 
     // Start when in view
     if (window.gsap && window.ScrollTrigger) {
@@ -523,11 +501,6 @@
         onLeave: stop,
         onLeaveBack: stop
       });
-      // If already visible on load (e.g., hero at top), start immediately
-      const rect = root.getBoundingClientRect();
-      if (rect.bottom > 0 && rect.top < (window.innerHeight || document.documentElement.clientHeight)) {
-        start();
-      }
     } else {
       start();
     }
@@ -606,8 +579,6 @@
   const selectors = [
     '#mission .pill, #mission .section-title, #mission .mission-cta',
     '#mission .mission-mobile-image img',
-    '#services .fs-left .fs-tab',
-    '#services .fs-right .fs-bubble',
     '.earn-section .earn-content .pill, .earn-section .earn-content .section-title',
     '.rfu .rfu-title',
     '.rfu .rfu-card',
@@ -622,12 +593,26 @@
   const elements = selectors.flatMap(sel => Array.from(document.querySelectorAll(sel)));
   elements.forEach(el => el.classList.add('reveal'));
 
+  // Slight stagger for mission pill/title to avoid simultaneous paints on low-end devices
+  const missionPill = document.querySelector('#mission .pill');
+  const missionTitle = document.querySelector('#mission .section-title');
+  if (missionPill) missionPill.style.setProperty('--reveal-delay', '0ms');
+  if (missionTitle) missionTitle.style.setProperty('--reveal-delay', '80ms');
+
   if (elements.length) {
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
           requestAnimationFrame(() => {
             entry.target.classList.add('is-visible');
+            // Drop will-change after animation completes to free GPU resources
+            const onEnd = (e) => {
+              if (e.propertyName === 'opacity' || e.propertyName === 'transform') {
+                entry.target.style.willChange = 'auto';
+                entry.target.removeEventListener('transitionend', onEnd);
+              }
+            };
+            entry.target.addEventListener('transitionend', onEnd);
             observer.unobserve(entry.target);
           });
         }
@@ -693,22 +678,7 @@
       });
     });
   }
-  // Form fields reveal
-  const form = section.querySelector('.inq-form');
-  if (form) {
-    const fields = Array.from(form.querySelectorAll('.field, .form-row, textarea'));
-    gsap.from(fields, {
-      y: 18,
-      opacity: 0,
-      duration: 0.5,
-      stagger: 0.06,
-      ease: 'power3.out',
-      scrollTrigger: {
-        trigger: form,
-        start: 'top 85%'
-      }
-    });
-  }
+  // Form fields reveal removed per request
 
   // Phone mockup float-in
   const phone = section.querySelector('.phone-frame');
@@ -737,8 +707,9 @@
   if (!modal || !modalImg) return;
 
   function open(src) {
-    // Images replaced by cards; disable opening modal
-    return;
+    modalImg.src = src;
+    modal.classList.add('is-open');
+    document.body.style.overflow = 'hidden';
   }
   function close() {
     modal.classList.remove('is-open');
@@ -749,12 +720,8 @@
   gallery.addEventListener('click', (e) => {
     const item = e.target.closest('.tstl-item');
     if (!item || !gallery.contains(item)) return;
-    // Toggle focus state to bring the card forward
-    const grid = gallery.querySelector('.tstl-perspective-inner');
-    const all = grid ? Array.from(grid.querySelectorAll('.tstl-item')) : [];
-    const wasFocused = item.classList.contains('is-focus');
-    all.forEach(el => el.classList.remove('is-focus'));
-    if (!wasFocused) item.classList.add('is-focus');
+    const src = item.getAttribute('data-full');
+    if (src) open(src);
   });
 
   modal.addEventListener('click', (e) => {
@@ -766,17 +733,38 @@
   });
 })();
 
-// Pause testimonial animations when offscreen
+// Click-to-emphasize for testimonial cards
 (function () {
   const gallery = document.querySelector('.testimonials-gallery');
-  if (!gallery) return;
-  const rows = Array.from(gallery.querySelectorAll('.tstl-row'));
-  if (rows.length === 0) return;
-  const setState = (running) => rows.forEach(r => { r.style.animationPlayState = running ? 'running' : 'paused'; });
-  const io = new IntersectionObserver((entries) => {
-    entries.forEach(entry => setState(entry.isIntersecting));
-  }, { threshold: 0.05 });
-  io.observe(gallery);
+  const inner = document.querySelector('.testimonials-gallery .tstl-perspective-inner');
+  if (!gallery || !inner) return;
+
+  const items = () => Array.from(gallery.querySelectorAll('.tstl-item'));
+
+  function clearFocus() {
+    inner.classList.remove('has-focus');
+    items().forEach(el => el.classList.remove('is-emphasized'));
+  }
+
+  gallery.addEventListener('click', (e) => {
+    const item = e.target.closest('.tstl-item');
+    if (!item || !gallery.contains(item)) {
+      clearFocus();
+      return;
+    }
+    const wasActive = item.classList.contains('is-emphasized');
+    items().forEach(el => el.classList.remove('is-emphasized'));
+    if (wasActive) {
+      inner.classList.remove('has-focus');
+    } else {
+      inner.classList.add('has-focus');
+      item.classList.add('is-emphasized');
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') clearFocus();
+  });
 })();
 
 // Navbar scroll shadow and active link highlighting
@@ -863,42 +851,54 @@
   if (!root) return;
   const tabs = Array.from(root.querySelectorAll('.fs-tab'));
   const panels = Array.from(root.querySelectorAll('.fs-panel'));
-
-  // Ensure active panel background is loaded
-  (function initActivePanelBg() {
-    const initial = panels.find(p => p.classList.contains('is-active'));
-    if (!initial) return;
-    const bgEl = initial.querySelector('.fs-bg[data-bg]');
-    if (bgEl && (!bgEl.style.backgroundImage || bgEl.style.backgroundImage === '')) {
-      bgEl.style.backgroundImage = `url('${bgEl.dataset.bg}')`;
-    }
-  })();
+  let switchTl = null;
 
   function activate(key) {
     const tab = tabs.find(t => t.dataset.key === key);
     const panel = panels.find(p => p.id === `fs-${key}`);
     if (!tab || !panel) return;
     const previous = panels.find(p => p.classList.contains('is-active'));
-    tabs.forEach(t => { t.classList.toggle('is-active', t === tab); t.setAttribute('aria-selected', String(t === tab)); });
+
+    tabs.forEach(t => {
+      const isActive = t === tab;
+      t.classList.toggle('is-active', isActive);
+      t.setAttribute('aria-selected', String(isActive));
+    });
+
     if (previous === panel) return;
+
     if (window.gsap) {
-      if (previous) {
-        gsap.to(previous, { opacity: 0, duration: 0.25, onComplete: () => { previous.classList.remove('is-active'); } });
-      }
+      if (switchTl) { switchTl.kill(); switchTl = null; }
       panel.classList.add('is-active');
-      // Lazy background set for active panel
-      const bgEl = panel.querySelector('.fs-bg[data-bg]');
-      if (bgEl && (!bgEl.style.backgroundImage || bgEl.style.backgroundImage === '')) {
-        bgEl.style.backgroundImage = `url('${bgEl.dataset.bg}')`;
+
+      if (previous) gsap.set(previous, { zIndex: 1 });
+      gsap.set(panel, { zIndex: 2, opacity: 0, y: 8 });
+
+      const bubble = panel.querySelector('.fs-bubble');
+
+      switchTl = gsap.timeline({
+        defaults: { ease: 'power3.out' },
+        onComplete: () => {
+          if (previous) {
+            previous.classList.remove('is-active');
+            gsap.set(previous, { clearProps: 'zIndex' });
+          }
+          gsap.set(panel, { clearProps: 'zIndex' });
+          switchTl = null;
+        }
+      });
+
+      if (previous) {
+        switchTl.to(previous, { opacity: 0, y: -6, duration: 0.4 }, 0);
       }
-      gsap.fromTo(panel, { opacity: 0 }, { opacity: 1, duration: 0.35, ease: 'power2.out' });
+      switchTl.to(panel, { opacity: 1, y: 0, duration: 0.5 }, 0);
+
+      if (bubble) {
+        switchTl.fromTo(bubble, { y: 10, opacity: 0 }, { y: 0, opacity: 1, duration: 0.45, ease: 'power2.out' }, 0.1);
+      }
     } else {
       if (previous) previous.classList.remove('is-active');
       panel.classList.add('is-active');
-      const bgEl = panel.querySelector('.fs-bg[data-bg]');
-      if (bgEl && (!bgEl.style.backgroundImage || bgEl.style.backgroundImage === '')) {
-        bgEl.style.backgroundImage = `url('${bgEl.dataset.bg}')`;
-      }
     }
   }
   tabs.forEach(t => t.addEventListener('click', () => activate(t.dataset.key)));
@@ -948,9 +948,7 @@
     }
   })();
 
-  // Features split
-  fadeUpEach('#services .fs-left .fs-tab', { x: -18, y: 0, duration: 0.5 });
-  fadeUpEach('#services .fs-right .fs-bubble', { y: 20, duration: 0.5 });
+  // Features split scroll-in disabled
 
   // Earn subsections: titles, cards, benefits, CTA
   fadeUpEach('.earn-section .earn-content .pill, .earn-section .earn-content .section-title', { y: 20 });

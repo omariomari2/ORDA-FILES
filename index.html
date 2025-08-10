@@ -9,9 +9,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="tryout.css">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Crect width='256' height='256' rx='56' ry='56' fill='%230a0a0a'/%3E%3Ctext x='50%25' y='58%25' text-anchor='middle' dominant-baseline='middle' font-family='Plus Jakarta Sans, Arial, sans-serif' font-size='168' font-weight='800' fill='%23ffffff'%3EO%3C/text%3E%3C/svg%3E" />
-  <!-- Performance hints -->
-  <link rel="preconnect" href="https://unpkg.com">
-  <link rel="preload" as="image" href="images/main.png" fetchpriority="high">
 
 </head>
 <body>
@@ -28,7 +25,7 @@
           </div>
         </article>
 
-        <article class="landing-slide" data-bg="images/orda/biker.jpg" aria-label="Safe, affordable rides">
+        <article class="landing-slide" style="background-image:url('../images/orda/biker.jpg')" aria-label="Safe, affordable rides">
           <div class="landing-overlay"></div>
           <div class="landing-content">
             <h2 class="landing-title">Safe, affordable rides in your community</h2>
@@ -37,7 +34,7 @@
           </div>
         </article>
 
-        <article class="landing-slide" data-bg="images/orda/market.jpeg" aria-label="Fast local delivery">
+        <article class="landing-slide" style="background-image:url('../images/orda/market.jpeg')" aria-label="Fast local delivery">
           <div class="landing-overlay"></div>
           <div class="landing-content">
             <h2 class="landing-title">Deliver anything — fast</h2>
@@ -46,7 +43,7 @@
           </div>
         </article>
 
-        <article class="landing-slide" data-bg="images/orda/googlemaps.png" aria-label="Hyper‑local news updates">
+        <article class="landing-slide" style="background-image:url('../images/orda/googlemaps.png')" aria-label="Hyper‑local news updates">
           <div class="landing-overlay"></div>
           <div class="landing-content">
             <h2 class="landing-title">Stay ahead with hyper‑local news</h2>
@@ -55,7 +52,7 @@
           </div>
         </article>
 
-        <article class="landing-slide" data-bg="images/prince.jpg" aria-label="Join as a driver">
+        <article class="landing-slide" style="background-image:url('../images/prince.jpg')" aria-label="Join as a driver">
           <div class="landing-overlay"></div>
           <div class="landing-content">
             <h2 class="landing-title">Join ORDA — drive and earn more</h2>
@@ -75,7 +72,7 @@
       </div>
     </div>
   </section>
-  
+
   <header class="site-nav" aria-label="Primary">
     <div class="nav-container">
       <a class="nav-brand" href="#home" aria-label="ORDA home">ORDA Rides</a>
@@ -128,7 +125,7 @@
         <h2 class="section-title">In Ghana’s <span class="hl">rural communities</span>, mobility isn’t just about <span class="hl">convenience</span>—it’s about access to <span class="hl">opportunity</span>, <span class="hl">safety</span>, and <span class="hl">dignity</span>.<br><span class="hl-strong">ORDA RIDES</span> exists to make sure <span class="hl">no one is left behind</span>.</h2>
         
         <div class="mission-mobile-image" aria-label="Mission highlight image">
-          <img src="../images/biker.jpg" alt="ORDA Rides mission" loading="lazy" decoding="async" />
+          <img src="../images/biker.jpg" alt="ORDA Rides mission" loading="lazy" decoding="async" fetchpriority="low" />
         </div>
         <div class="mission-cta">
           <a class="btn btn-read-more" href="more.html" aria-label="Read more about our mission">Read More</a>
@@ -219,21 +216,21 @@
       </div>
       <div class="fs-right">
         <article class="fs-panel is-active" id="fs-rides" role="tabpanel" aria-label="Rides">
-          <div class="fs-bg" data-bg="images/orda/biker.jpg"></div>
+          <div class="fs-bg" style="background-image:url('images/orda/biker.jpg');"></div>
           <div class="fs-bubble">
             <strong>Order rides in seconds</strong>
             <p>Upfront pricing, live tracking, and built‑in safety sharing for peace of mind.</p>
           </div>
         </article>
         <article class="fs-panel" id="fs-delivery" role="tabpanel" aria-label="Delivery">
-          <div class="fs-bg" data-bg="images/okada.png"></div>
+          <div class="fs-bg" style="background-image:url('images/okada.png');"></div>
           <div class="fs-bubble">
             <strong>Deliver anything — fast</strong>
             <p>Door‑to‑door parcels with OTP handoff and photo proof.</p>
           </div>
         </article>
         <article class="fs-panel" id="fs-news" role="tabpanel" aria-label="Local News">
-          <div class="fs-bg" data-bg="images/orda/googlemaps.png"></div> 
+          <div class="fs-bg" style="background-image:url('images/orda/googlemaps.png');"></div> 
           <div class="fs-bubble">
             <strong>Stay ahead with local alerts</strong>
             <p>Road closures, market info, and safety updates tailored to your area.</p>
@@ -268,7 +265,7 @@
             </blockquote>
           </div>
           <div class="rfu-person">
-            <img src="../images/okada.png" alt="ORDA rider" loading="lazy" decoding="async" />
+            <img src="../images/okada.png" alt="ORDA rider" />
           </div>
         </div>
 
@@ -334,7 +331,7 @@
             </blockquote>
           </div>
           <div class="rfu-person">
-            <img src="../images/woman.png" alt="Business owner" loading="lazy" decoding="async" />
+            <img src="../images/woman.png" alt="Business owner" />
           </div>
         </div>
 
@@ -557,7 +554,7 @@
     <div class="container">
       <div class="testimonials-header" style="text-align:center;">
         <span class="pill">Testimonials</span>
-        <h2 class="section-title">What our customers and partners say</h2>
+        <h2 class="section-title">What our riders and partners say</h2>
       </div>
     </div>
 
@@ -565,20 +562,152 @@
       <div class="tstl-perspective">
         <div class="tstl-perspective-inner">
           <div class="tstl-row row-1">
-            <div class="tstl-item"><div class="tstl-card"><blockquote class="tstl-quote">“I arrived faster and paid less than usual. The driver was professional and friendly.”</blockquote><div class="tstl-author">Kofi Mensah</div><div class="tstl-role">Trader, Accra</div></div></div>
-            <div class="tstl-item"><div class="tstl-card"><blockquote class="tstl-quote">“Scheduling my morning rides saves me time. I can focus on my business.”</blockquote><div class="tstl-author">Ama Boateng</div><div class="tstl-role">Shop Owner, Madina</div></div></div>
-            <div class="tstl-item"><div class="tstl-card"><blockquote class="tstl-quote">“Delivery was quick and the OTP handoff made it very secure.”</blockquote><div class="tstl-author">Yaw Antwi</div><div class="tstl-role">Electronics Seller, Kumasi</div></div></div>
-            <div class="tstl-item"><div class="tstl-card"><blockquote class="tstl-quote">“As a parent, I love the real‑time tracking and driver details.”</blockquote><div class="tstl-author">Akua Serwaa</div><div class="tstl-role">Parent, Cape Coast</div></div></div>
-            <div class="tstl-item"><div class="tstl-card"><blockquote class="tstl-quote">“The prices are fair and the app is easy to use even with my basic phone.”</blockquote><div class="tstl-author">Kwame Asare</div><div class="tstl-role">Driver, Kasoa</div></div></div>
-            <div class="tstl-item"><div class="tstl-card"><blockquote class="tstl-quote">“ORDA helps me reach customers beyond my area with reliable delivery.”</blockquote><div class="tstl-author">Efua Owusu</div><div class="tstl-role">Food Vendor, Tamale</div></div></div>
+            <div class="tstl-item">
+              <div class="testi-card">
+                <div class="testi-header">
+                  <img class="testi-avatar" src="images/prince.jpg" alt="Prince A." loading="lazy" decoding="async" />
+                  <div class="testi-id">
+                    <div class="testi-name">Prince A.</div>
+                    <div class="testi-meta">Accra • Rider</div>
+                  </div>
+                </div>
+                <p class="testi-quote">“ORDA gets me to the market and back in half the time. Fares are clear and I feel safe.”</p>
+              </div>
+            </div>
+            <div class="tstl-item">
+              <div class="testi-card">
+                <div class="testi-header">
+                  <img class="testi-avatar" src="images/woman.png" alt="Akosua M." loading="lazy" decoding="async" />
+                  <div class="testi-id">
+                    <div class="testi-name">Akosua M.</div>
+                    <div class="testi-meta">Madina • Merchant</div>
+                  </div>
+                </div>
+                <p class="testi-quote">“Deliveries arrive fast and my customers get updates. It’s boosted my sales.”</p>
+              </div>
+            </div>
+            <div class="tstl-item">
+              <div class="testi-card">
+                <div class="testi-header">
+                  <img class="testi-avatar" src="images/guy.jpg" alt="Kweku P." loading="lazy" decoding="async" />
+                  <div class="testi-id">
+                    <div class="testi-name">Kweku P.</div>
+                    <div class="testi-meta">Kasoa • Rider</div>
+                  </div>
+                </div>
+                <p class="testi-quote">“Upfront pricing and quick pickups. I’ve switched to ORDA for my daily commute.”</p>
+              </div>
+            </div>
+            <div class="tstl-item">
+              <div class="testi-card">
+                <div class="testi-header">
+                  <img class="testi-avatar" src="images/orda/biker.jpg" alt="Yaw D." loading="lazy" decoding="async" />
+                  <div class="testi-id">
+                    <div class="testi-name">Yaw D.</div>
+                    <div class="testi-meta">Tema • Driver</div>
+                  </div>
+                </div>
+                <p class="testi-quote">“Flexible hours and instant payouts. I earn more while choosing when to work.”</p>
+              </div>
+            </div>
+            <div class="tstl-item">
+              <div class="testi-card">
+                <div class="testi-header">
+                  <img class="testi-avatar" src="images/woman.png" alt="Naana E." loading="lazy" decoding="async" />
+                  <div class="testi-id">
+                    <div class="testi-name">Naana E.</div>
+                    <div class="testi-meta">Cape Coast • Parent</div>
+                  </div>
+                </div>
+                <p class="testi-quote">“The SOS and trip sharing features give me peace of mind when my kids ride.”</p>
+              </div>
+            </div>
+            <div class="tstl-item">
+              <div class="testi-card">
+                <div class="testi-header">
+                  <img class="testi-avatar" src="images/prince.jpg" alt="Prosper K." loading="lazy" decoding="async" />
+                  <div class="testi-id">
+                    <div class="testi-name">Prosper K.</div>
+                    <div class="testi-meta">Kumasi • Rider</div>
+                  </div>
+                </div>
+                <p class="testi-quote">“Scheduled rides mean I’m never late for work anymore. Very reliable.”</p>
+              </div>
+            </div>
           </div>
           <div class="tstl-row row-2">
-            <div class="tstl-item"><div class="tstl-card"><blockquote class="tstl-quote">“I cash out the same day. The earnings help me support my family.”</blockquote><div class="tstl-author">Sule Musah</div><div class="tstl-role">Rider, Wa</div></div></div>
-            <div class="tstl-item"><div class="tstl-card"><blockquote class="tstl-quote">“Support responds quickly when I need help. Very reliable.”</blockquote><div class="tstl-author">Naana Akyaa</div><div class="tstl-role">Student, Sunyani</div></div></div>
-            <div class="tstl-item"><div class="tstl-card"><blockquote class="tstl-quote">“I use ORDA to deliver my market goods—customers are happier.”</blockquote><div class="tstl-author">Adwoa Korang</div><div class="tstl-role">Market Seller, Makola</div></div></div>
-            <div class="tstl-item"><div class="tstl-card"><blockquote class="tstl-quote">“The app works even when my internet is weak. USSD is a lifesaver.”</blockquote><div class="tstl-author">Kojo Baffour</div><div class="tstl-role">Teacher, Koforidua</div></div></div>
-            <div class="tstl-item"><div class="tstl-card"><blockquote class="tstl-quote">“Clean rides and honest pricing. I recommend it to my friends.”</blockquote><div class="tstl-author">Mabel Tetteh</div><div class="tstl-role">Nurse, Ho</div></div></div>
-            <div class="tstl-item"><div class="tstl-card"><blockquote class="tstl-quote">“Partnering with ORDA boosted my orders. Delivery is smooth.”</blockquote><div class="tstl-author">Daniel Quaye</div><div class="tstl-role">Boutique Owner, Tema</div></div></div>
+            <div class="tstl-item">
+              <div class="testi-card">
+                <div class="testi-header">
+                  <img class="testi-avatar" src="images/guy.jpg" alt="Kojo T." loading="lazy" decoding="async" />
+                  <div class="testi-id">
+                    <div class="testi-name">Kojo T.</div>
+                    <div class="testi-meta">Sunyani • Student</div>
+                  </div>
+                </div>
+                <p class="testi-quote">“Affordable fares help me save on campus trips. The app is simple to use.”</p>
+              </div>
+            </div>
+            <div class="tstl-item">
+              <div class="testi-card">
+                <div class="testi-header">
+                  <img class="testi-avatar" src="images/woman.png" alt="Abena S." loading="lazy" decoding="async" />
+                  <div class="testi-id">
+                    <div class="testi-name">Abena S.</div>
+                    <div class="testi-meta">Takoradi • Vendor</div>
+                  </div>
+                </div>
+                <p class="testi-quote">“I send packages with OTP handoff and photo proof—super trustworthy.”</p>
+              </div>
+            </div>
+            <div class="tstl-item">
+              <div class="testi-card">
+                <div class="testi-header">
+                  <img class="testi-avatar" src="images/prince.jpg" alt="Yaw B." loading="lazy" decoding="async" />
+                  <div class="testi-id">
+                    <div class="testi-name">Yaw B.</div>
+                    <div class="testi-meta">Tamale • Community Leader</div>
+                  </div>
+                </div>
+                <p class="testi-quote">“Local alerts help us avoid road closures. It’s more than transport.”</p>
+              </div>
+            </div>
+            <div class="tstl-item">
+              <div class="testi-card">
+                <div class="testi-header">
+                  <img class="testi-avatar" src="images/guy.jpg" alt="Kwesi N." loading="lazy" decoding="async" />
+                  <div class="testi-id">
+                    <div class="testi-name">Kwesi N.</div>
+                    <div class="testi-meta">Ho • Farmer</div>
+                  </div>
+                </div>
+                <p class="testi-quote">“Even without data I can book by USSD. That changes everything.”</p>
+              </div>
+            </div>
+            <div class="tstl-item">
+              <div class="testi-card">
+                <div class="testi-header">
+                  <img class="testi-avatar" src="images/woman.png" alt="Efua A." loading="lazy" decoding="async" />
+                  <div class="testi-id">
+                    <div class="testi-name">Efua A.</div>
+                    <div class="testi-meta">Bolga • Teacher</div>
+                  </div>
+                </div>
+                <p class="testi-quote">“Fair prices, polite riders, and quick support when I had a question.”</p>
+              </div>
+            </div>
+            <div class="tstl-item">
+              <div class="testi-card">
+                <div class="testi-header">
+                  <img class="testi-avatar" src="images/prince.jpg" alt="Kofi Q." loading="lazy" decoding="async" />
+                  <div class="testi-id">
+                    <div class="testi-name">Kofi Q.</div>
+                    <div class="testi-meta">Koforidua • Driver</div>
+                  </div>
+                </div>
+                <p class="testi-quote">“I like the ratings and safety training. Riders trust the platform more.”</p>
+              </div>
+            </div>
           </div>
 
 
@@ -590,7 +719,7 @@
       <div class="tstl-modal-backdrop" data-close="true"></div>
       <div class="tstl-modal-card" role="dialog" aria-modal="true" aria-label="Image preview">
         <button class="tstl-modal-close" aria-label="Close" data-close="true">&times;</button>
-        <img class="tstl-modal-image" id="testimonialModalImage" alt="Testimonial image" loading="lazy" decoding="async" />
+        <img class="tstl-modal-image" id="testimonialModalImage" alt="Testimonial image" />
       </div>
     </div>
   </section>
