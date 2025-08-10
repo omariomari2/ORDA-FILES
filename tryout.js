@@ -501,6 +501,11 @@
         onLeave: stop,
         onLeaveBack: stop
       });
+      // If already visible on load (e.g., hero at top), start immediately
+      const rect = root.getBoundingClientRect();
+      if (rect.bottom > 0 && rect.top < (window.innerHeight || document.documentElement.clientHeight)) {
+        start();
+      }
     } else {
       start();
     }
