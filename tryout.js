@@ -710,9 +710,8 @@
   if (!modal || !modalImg) return;
 
   function open(src) {
-    modalImg.src = src;
-    modal.classList.add('is-open');
-    document.body.style.overflow = 'hidden';
+    // Images replaced by cards; disable opening modal
+    return;
   }
   function close() {
     modal.classList.remove('is-open');
@@ -720,19 +719,33 @@
     document.body.style.overflow = '';
   }
 
+  // Bring card forward on click
   gallery.addEventListener('click', (e) => {
     const item = e.target.closest('.tstl-item');
     if (!item || !gallery.contains(item)) return;
-    const src = item.getAttribute('data-full');
-    if (src) open(src);
+    // Toggle focus state; only one at a time
+    const focused = gallery.querySelector('.tstl-item.is-focused');
+    if (focused && focused !== item) focused.classList.remove('is-focused');
+    item.classList.toggle('is-focused');
+  });
+
+  // Click outside any card to remove focus
+  document.addEventListener('click', (e) => {
+    const insideGallery = e.target.closest('.testimonials-gallery');
+    if (!insideGallery) {
+      gallery.querySelectorAll('.tstl-item.is-focused').forEach(el => el.classList.remove('is-focused'));
+    }
+  });
+
+  // Escape to unfocus
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      gallery.querySelectorAll('.tstl-item.is-focused').forEach(el => el.classList.remove('is-focused'));
+    }
   });
 
   modal.addEventListener('click', (e) => {
     if (e.target.matches('[data-close]') || e.target === modal) close();
-  });
-
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && modal.classList.contains('is-open')) close();
   });
 })();
 
@@ -835,6 +848,7 @@
     });
 
     if (previous === panel) return;
+<<<<<<< Updated upstream
 
     if (window.gsap) {
       if (switchTl) { switchTl.kill(); switchTl = null; }
@@ -865,6 +879,14 @@
       if (bubble) {
         switchTl.fromTo(bubble, { y: 10, opacity: 0 }, { y: 0, opacity: 1, duration: 0.45, ease: 'power2.out' }, 0.1);
       }
+=======
+    if (window.gsap) {
+      if (previous) {
+        gsap.to(previous, { opacity: 0, duration: 0.25, onComplete: () => { previous.classList.remove('is-active'); } });
+      }
+      panel.classList.add('is-active');
+      gsap.fromTo(panel, { opacity: 0 }, { opacity: 1, duration: 0.35, ease: 'power2.out' });
+>>>>>>> Stashed changes
     } else {
       if (previous) previous.classList.remove('is-active');
       panel.classList.add('is-active');
