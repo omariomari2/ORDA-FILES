@@ -58,7 +58,8 @@
   const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const section = document.querySelector('.features-section');
   if (!section || prefersReduced) return;
-  const isMobile = window.matchMedia && window.matchMedia('(max-width: 640px)').matches;
+  const isMobileView = window.matchMedia && window.matchMedia('(max-width: 720px)').matches;
+  if (isMobileView) return;
 
   if (!window.gsap) return;
   gsap.registerPlugin(ScrollTrigger);
@@ -76,66 +77,50 @@
         trigger: section,
         start: 'top 80%',
         end: 'top 20%',
-        toggleActions: isMobile ? 'play none none none' : 'play none none reverse'
+        toggleActions: 'play none none reverse'
       }
     });
 
-    if (pill) tl.from(pill, { y: 24, opacity: 0, duration: 0.5, ease: 'power3.out' });
-    if (title) tl.from(title, { y: 28, opacity: 0, duration: 0.6, ease: 'power3.out' }, '-=0.2');
-    if (sub) tl.from(sub, { y: 20, opacity: 0, duration: 0.5, ease: 'power3.out' }, '-=0.25');
+    if (pill) tl.from(pill, { y: 18, opacity: 0, duration: 0.6, ease: 'power4.out' });
+    if (title) tl.from(title, { y: 20, opacity: 0, duration: 0.7, ease: 'power4.out' }, '-=0.25');
+    if (sub) tl.from(sub, { y: 14, opacity: 0, duration: 0.6, ease: 'power4.out' }, '-=0.25');
   }
 
   // Cards entrance animation
   if (featureCards.length) {
-    if (!isMobile) {
-      gsap.set(featureCards, { transformPerspective: 800, transformOrigin: '50% 60%' });
-      gsap.from(featureCards, {
-        opacity: 0,
-        y: 60,
-        rotateX: -12,
-        rotateY: 6,
-        scale: 0.96,
-        duration: 0.7,
-        ease: 'expo.out',
-        stagger: 0.1,
-        scrollTrigger: {
-          trigger: grid,
-          start: 'top 75%',
-          toggleActions: 'play none none reverse'
-        }
-      });
-    } else {
-      gsap.from(featureCards, {
-        opacity: 0,
-        y: 24,
-        duration: 0.45,
-        ease: 'power2.out',
-        stagger: 0.08,
-        scrollTrigger: {
-          trigger: grid,
-          start: 'top 80%',
-          toggleActions: 'play none none none'
-        }
-      });
-    }
+    gsap.set(featureCards, { transformPerspective: 800, transformOrigin: '50% 60%' });
+    gsap.from(featureCards, {
+      opacity: 0,
+      y: 64,
+      rotateX: -12,
+      rotateY: 6,
+      scale: 0.96,
+      filter: 'blur(2px)',
+      duration: 1.0,
+      ease: 'power3.out',
+      stagger: 0.10,
+      scrollTrigger: {
+        trigger: grid,
+        start: 'top 80%',
+        toggleActions: 'play none none reverse'
+      }
+    });
 
-    // Parallax on icons inside cards during scroll (desktop only)
-    if (!isMobile) {
-      featureCards.forEach((card) => {
-        const icon = card.querySelector('.feature-icon');
-        if (!icon) return;
-        gsap.fromTo(icon, { y: 0 }, {
-          y: -10,
-          ease: 'none',
-          scrollTrigger: {
-            trigger: card,
-            start: 'top bottom',
-            end: 'bottom top',
-            scrub: true
-          }
-        });
+    // Parallax on icons inside cards during scroll
+    featureCards.forEach((card) => {
+      const icon = card.querySelector('.feature-icon');
+      if (!icon) return;
+      gsap.fromTo(icon, { y: 0 }, {
+        y: -10,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: card,
+          start: 'top bottom',
+          end: 'bottom top',
+          scrub: true
+        }
       });
-    }
+    });
 
     // Reveal inner content per card
     featureCards.forEach((card) => {
@@ -148,7 +133,7 @@
         scrollTrigger: {
           trigger: card,
           start: 'top 78%',
-          toggleActions: isMobile ? 'play none none none' : 'play none none reverse'
+          toggleActions: 'play none none reverse'
         }
       });
 
@@ -158,10 +143,8 @@
       if (cta) tl.from(cta, { y: 10, opacity: 0, duration: 0.3, ease: 'power2.out' }, '-=0.05');
     });
 
-    // Hover tilt interaction (pointer devices only)
-    const supportsHover = window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+    // Hover tilt interaction
     featureCards.forEach((card) => {
-      if (!supportsHover) return;
       card.addEventListener('mousemove', (e) => {
         const rect = card.getBoundingClientRect();
         const relX = (e.clientX - rect.left) / rect.width - 0.5;
@@ -304,7 +287,7 @@
       toEl.classList.add('is-active');
 
       const tl = gsap.timeline({
-        defaults: { ease: 'power2.out' },
+        defaults: { ease: 'power3.out' },
         onComplete: () => {
           fromEl.classList.remove('is-active');
           gsap.set(toEl, { position: 'relative', clearProps: 'position,inset' });
@@ -314,9 +297,9 @@
       });
 
       tl.add(() => setTrackHeight(toEl, true), 0)
-        .to(fromEl, { opacity: 0, x: -40 * direction, duration: 0.45 }, 0)
-        .to(toEl, { opacity: 1, x: 0, duration: 0.5 }, 0)
-        .add(animateInElements(toEl), '>-0.25');
+        .to(fromEl, { opacity: 0, x: -40 * direction, duration: 0.55 }, 0)
+        .to(toEl, { opacity: 1, x: 0, duration: 0.6 }, 0)
+        .add(animateInElements(toEl), '>-0.2');
 
       index = newIndex;
       updateDots(index);
@@ -443,7 +426,7 @@
       gsap.set(from, { zIndex: 1 });
 
       const tl = gsap.timeline({
-        defaults: { ease: 'power2.out' },
+        defaults: { ease: 'power3.out' },
         onComplete: () => {
           from.classList.remove('is-active');
           // Keep slides absolutely positioned to layer content over background without reflow
@@ -452,8 +435,8 @@
         }
       });
 
-      tl.to(from, { opacity: 0, x: -60 * dir, duration: 0.5 }, 0)
-        .to(to, { opacity: 1, x: 0, duration: 0.6 }, 0);
+      tl.to(from, { opacity: 0, x: -60 * dir, duration: 0.65 }, 0)
+        .to(to, { opacity: 1, x: 0, duration: 0.75 }, 0);
 
       index = newIndex;
       updateDots(index);
@@ -525,19 +508,28 @@
 
   const mapBlock = document.querySelector('.features-map .map-img');
   const mapWrap = document.querySelector('.features-map');
-  if (mapBlock && mapWrap && !isMobile) {
-    gsap.set(mapBlock, { scale: 0.95, opacity: 0.95 });
-    gsap.to(mapBlock, {
-      scale: 1,
-      opacity: 1,
-      ease: 'none',
-      scrollTrigger: {
-        trigger: mapWrap,
-        start: 'top bottom',
-        end: 'center center',
-        scrub: true
-      }
-    });
+  if (mapBlock && mapWrap) {
+    const isMobileView = window.matchMedia && window.matchMedia('(max-width: 720px)').matches;
+    if (isMobileView || !window.gsap) {
+      // On mobile or when GSAP is unavailable, show static image without scroll effects
+      mapBlock.style.transform = 'none';
+      mapBlock.style.filter = 'none';
+      mapBlock.style.opacity = '1';
+    } else {
+      gsap.set(mapBlock, { scale: 0.9, filter: 'blur(2px)', opacity: 0.9 });
+      gsap.to(mapBlock, {
+        scale: 1,
+        filter: 'blur(0px)',
+        opacity: 1,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: mapWrap,
+          start: 'top bottom',
+          end: 'center center',
+          scrub: true
+        }
+      });
+    }
   }
 })(); 
 
@@ -577,12 +569,55 @@
   });
 })();
 
+// Mobile simple scroll reveal (used on mobile instead of GSAP ScrollTrigger)
+(function () {
+  if (typeof window === 'undefined') return;
+  const isMobileView = window.matchMedia && window.matchMedia('(max-width: 720px)').matches;
+  const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!isMobileView || prefersReduced) return;
+
+  const selectors = [
+    '#mission .pill, #mission .section-title, #mission .mission-cta',
+    '#mission .mission-mobile-image img',
+    '#services .fs-left .fs-tab',
+    '#services .fs-right .fs-bubble',
+    '.earn-section .earn-content .pill, .earn-section .earn-content .section-title',
+    '.rfu .rfu-title',
+    '.rfu .rfu-card',
+    '.rfu .rfu-benefits .benefit',
+    '.rfu .rfu-cta',
+    '#testimonials .testimonials-header',
+    '.testimonials-gallery',
+    '.end-section .end-content',
+    '.site-footer .footer-top, .site-footer .footer-bottom'
+  ];
+
+  const elements = selectors.flatMap(sel => Array.from(document.querySelectorAll(sel)));
+  elements.forEach(el => el.classList.add('reveal'));
+
+  if (elements.length) {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          requestAnimationFrame(() => {
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target);
+          });
+        }
+      });
+    }, { threshold: 0.01, rootMargin: '0px 0px 15% 0px' });
+
+    elements.forEach(el => observer.observe(el));
+  }
+})();
+
 // Waitlist animations (GSAP)
 (function () {
-  if (typeof window === 'undefined' || !window.gsap) return;
+  if (typeof window === 'undefined') return;
   const section = document.querySelector('.waitlist-section');
   if (!section) return;
-  const isMobile = window.matchMedia && window.matchMedia('(max-width: 640px)').matches;
+  const isMobileView = window.matchMedia && window.matchMedia('(max-width: 720px)').matches;
+  if (isMobileView || !window.gsap) return;
 
   const cards = Array.from(section.querySelectorAll('.wl-card'));
   const title = section.querySelector('.waitlist-title, .inquiry-title');
@@ -597,7 +632,6 @@
       scrollTrigger: {
         trigger: section,
         start: 'top 80%',
-        toggleActions: isMobile ? 'play none none none' : 'play none none reverse'
       }
     });
   }
@@ -612,28 +646,25 @@
       stagger: 0.12,
       scrollTrigger: {
         trigger: section,
-        start: 'top 75%',
-        toggleActions: isMobile ? 'play none none none' : 'play none none reverse'
+        start: 'top 75%'
       }
     });
 
-    // subtle parallax on icons (desktop only)
-    if (!isMobile) {
-      cards.forEach((card) => {
-        const icon = card.querySelector('.wl-icon');
-        if (!icon) return;
-        gsap.fromTo(icon, { y: 0 }, {
-          y: -8,
-          ease: 'none',
-          scrollTrigger: {
-            trigger: card,
-            start: 'top bottom',
-            end: 'bottom top',
-            scrub: true
-          }
-        });
+    // subtle parallax on icons
+    cards.forEach((card) => {
+      const icon = card.querySelector('.wl-icon');
+      if (!icon) return;
+      gsap.fromTo(icon, { y: 0 }, {
+        y: -8,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: card,
+          start: 'top bottom',
+          end: 'bottom top',
+          scrub: true
+        }
       });
-    }
+    });
   }
   // Form fields reveal
   const form = section.querySelector('.inq-form');
@@ -647,8 +678,7 @@
       ease: 'power3.out',
       scrollTrigger: {
         trigger: form,
-        start: 'top 85%',
-        toggleActions: isMobile ? 'play none none none' : 'play none none reverse'
+        start: 'top 85%'
       }
     });
   }
@@ -665,8 +695,7 @@
       ease: 'power3.out',
       scrollTrigger: {
         trigger: phone,
-        start: 'top 85%',
-        toggleActions: isMobile ? 'play none none none' : 'play none none reverse'
+        start: 'top 85%'
       }
     });
   }
@@ -798,12 +827,43 @@
     const previous = panels.find(p => p.classList.contains('is-active'));
     tabs.forEach(t => { t.classList.toggle('is-active', t === tab); t.setAttribute('aria-selected', String(t === tab)); });
     if (previous === panel) return;
-    if (window.gsap) {
-      if (previous) {
-        gsap.to(previous, { opacity: 0, duration: 0.25, onComplete: () => { previous.classList.remove('is-active'); } });
-      }
+
+    const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (window.gsap && !prefersReduced) {
+      const prevBg = previous ? previous.querySelector('.fs-bg') : null;
+      const prevBubble = previous ? previous.querySelector('.fs-bubble') : null;
+      const nextBg = panel.querySelector('.fs-bg');
+      const nextBubble = panel.querySelector('.fs-bubble');
+
       panel.classList.add('is-active');
-      gsap.fromTo(panel, { opacity: 0 }, { opacity: 1, duration: 0.35, ease: 'power2.out' });
+      gsap.set(panel, { opacity: 0 });
+
+      const tl = gsap.timeline({
+        defaults: { ease: 'power3.out' },
+        onComplete: () => {
+          if (previous) previous.classList.remove('is-active');
+        }
+      });
+
+      if (previous) {
+        tl.to(previous, { opacity: 0, duration: 0.35 }, 0);
+        if (prevBubble) {
+          tl.to(prevBubble, { x: -10, y: -6, opacity: 0, filter: 'blur(2px)', duration: 0.35 }, 0);
+        }
+      }
+
+      if (nextBg) {
+        gsap.set(nextBg, { scale: 1.04, filter: 'blur(2px)' });
+        tl.to(nextBg, { scale: 1, filter: 'blur(0px)', duration: 0.6 }, 0);
+      }
+
+      if (nextBubble) {
+        gsap.set(nextBubble, { x: 10, y: 10, opacity: 0 });
+        tl.to(nextBubble, { x: 0, y: 0, opacity: 1, duration: 0.45 }, 0.05);
+      }
+
+      tl.to(panel, { opacity: 1, duration: 0.45 }, 0);
     } else {
       if (previous) previous.classList.remove('is-active');
       panel.classList.add('is-active');
@@ -817,29 +877,29 @@
   if (typeof window === 'undefined' || !window.gsap) return;
   const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (prefersReduced) return;
-  const isMobile = window.matchMedia && window.matchMedia('(max-width: 640px)').matches;
-  if (isMobile) return; // disable global scroll-in animations on mobile to improve performance
+  const isMobileView = window.matchMedia && window.matchMedia('(max-width: 720px)').matches;
+  if (isMobileView) return;
   gsap.registerPlugin(ScrollTrigger);
 
   const fadeUpEach = (selector, opts = {}) => {
     gsap.utils.toArray(selector).forEach((el) => {
       gsap.from(el, {
-        y: opts.y ?? 24,
+        y: opts.y ?? 18,
         opacity: 0,
-        duration: opts.duration ?? 0.6,
-        ease: opts.ease ?? 'power3.out',
+        duration: opts.duration ?? 0.7,
+        ease: opts.ease ?? 'power4.out',
         clearProps: 'transform,opacity',
         scrollTrigger: {
           trigger: el,
           start: opts.start ?? 'top 85%',
-          toggleActions: opts.toggleActions ?? 'play none none reverse'
+          toggleActions: 'play none none reverse'
         }
       });
     });
   };
 
   // Mission section
-  fadeUpEach('#mission .pill, #mission .section-title, #mission .mission-cta', { y: 26 });
+  fadeUpEach('#mission .pill, #mission .section-title, #mission .mission-cta', { y: 18, duration: 0.7 });
   // Mission gallery cards (stagger per row)
   (function () {
     const cards = gsap.utils.toArray('#mission .flex-gallery .card');
@@ -868,12 +928,12 @@
     const benefits = gsap.utils.toArray('.rfu .rfu-benefits .benefit');
     if (benefits.length) {
       gsap.from(benefits, {
-        y: 16,
+        y: 14,
         opacity: 0,
-        duration: 0.45,
+        duration: 0.6,
         stagger: 0.06,
-        ease: 'power2.out',
-        scrollTrigger: { trigger: benefits[0].closest('.rfu'), start: 'top 75%', toggleActions: 'play none none reverse' }
+        ease: 'power3.out',
+        scrollTrigger: { trigger: benefits[0].closest('.rfu'), start: 'top 75%' }
       });
     }
   })();
