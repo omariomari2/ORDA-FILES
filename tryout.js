@@ -510,10 +510,7 @@
       stop();
       start();
     });
-    root.addEventListener('mouseenter', stop);
-    root.addEventListener('mouseleave', start);
-    root.addEventListener('focusin', stop);
-    root.addEventListener('focusout', start);
+    // Do not pause on hover or focus; keep autoplay continuous
 
     // Start when in view
     if (window.gsap && window.ScrollTrigger) {
